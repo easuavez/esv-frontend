@@ -25,6 +25,7 @@ export const attentionCollection = firestore.collection('attention');
 export const queueCollection = firestore.collection('queue');
 export const bookingCollection = firestore.collection('booking');
 export const waitlistCollection = firestore.collection('waitlist');
+export const bookingBlockNumberUsedCollection = firestore.collection('booking-block-number-used');
 
 export function updatedAttentions(attentionId) {
   const attentions = ref([]);
@@ -105,6 +106,25 @@ export function updatedAvailableAttentionsByCommerce(commerceId) {
 }
 
 export function updatedAvailableAttentionsByCommerceAndQueue(queueId) {
+  const attentions = ref([]);
+  const date = new Date(new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().slice(0,10));
+  const dateToRequest = firebase.firestore.Timestamp.fromDate(date);
+  const attentionQuery = attentionCollection
+    .where('queueId', "==", queueId)
+    .where('createdAt', '>', dateToRequest)
+    .orderBy('createdAt', 'asc')
+    .orderBy('number', 'asc');
+  const unsubscribe = attentionQuery.onSnapshot(snapshot => {
+    attentions.value = snapshot.docs
+      .map(doc => {
+        return { id: doc.id, ...doc.data(), createdAt: doc.data().createdAt.toDate().toString() }
+      })
+  })
+  onUnmounted(unsubscribe)
+  return attentions;
+}
+
+export function updatedAvailableBookingsByCommerceAndQueue(queueId) {
   const attentions = ref([]);
   const date = new Date(new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().slice(0,10));
   const dateToRequest = firebase.firestore.Timestamp.fromDate(date);

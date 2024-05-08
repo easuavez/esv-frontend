@@ -11,7 +11,7 @@ import { createWaitlist } from '../application/services/waitlist';
 import { globalStore } from '../stores';
 import { validateEmail } from '../shared/utils/email';
 import { getActiveFeature } from '../shared/features';
-import { bookingCollection, attentionCollection } from '../application/firebase';
+import { bookingCollection, attentionCollection, bookingBlockNumberUsedCollection, updatedAvailableBookingsByCommerceAndQueue } from '../application/firebase';
 import { getCollaboratorsByCommerceId, getCollaboratorDetailsById } from '../application/services/collaborator';
 import Message from '../components/common/Message.vue';
 import PoweredBy from '../components/common/PoweredBy.vue';
@@ -24,6 +24,7 @@ import firebase from 'firebase/app';
 import ClientForm from '../components/domain/ClientForm.vue';
 import QueueForm from '../components/domain/QueueForm.vue';
 import ServiceForm from '../components/domain/ServiceForm.vue';
+import { v4 as uuidv4 } from 'uuid';
 
 export default {
   name: 'CommerceQueuesView',
@@ -133,13 +134,15 @@ export default {
       canBook: false,
       totalServicesResquested: 0,
       totalDurationRequested: 0,
-      amountofBlocksNeeded: 0
+      amountofBlocksNeeded: 0,
+      sessionId: undefined
     });
 
     onBeforeMount(async () => {
       try {
         loading.value = true;
         if (keyName) {
+          state.sessionId = uuidv4().toString();
           state.commerce = await getCommerceByKeyName(keyName);
           state.locale = state.commerce.localeInfo.language;
           store.setCurrentCommerce(state.commerce);
@@ -224,6 +227,9 @@ export default {
         unsubscribeAttentions();
       }
     })
+
+    let bookingsUpdated = ref([]);
+    bookingsUpdated = updatedAvailableBookingsByCommerceAndQueue(queue);
 
     const receiveData = (data) => {
       if (data) {
@@ -642,12 +648,13 @@ export default {
           if (isDataActive(state.commerce)) {
             newUser = { ...bodyUser, commerceId: state.commerce.id, notificationOn: state.accept, notificationEmailOn: state.accept, acceptTermsAndConditions: state.accept };
           }
-          let body = { queueId: state.queue.id, channel: state.currentChannel, user: newUser, date: formattedDate(state.date), block: state.block, clientId: state.newUser.clientId };
+          let body = { sessionId: state.sessionId, queueId: state.queue.id, channel: state.currentChannel, user: newUser, date: formattedDate(state.date), block: state.block, clientId: state.newUser.clientId };
           if (state.selectedServices && state.selectedServices.length > 0) {
             const servicesId = state.selectedServices.map(serv => serv.id);
             const servicesDetails = state.selectedServices.map(serv => { return { id: serv.id, name: serv.name, tag: serv.tag, procedures: serv.serviceInfo.procedures || 1 } });
             body = { ...body, servicesId, servicesDetails };
           }
+          // await addBookingNumberUsed(state.sessionId, state.queue.id, formattedDate(state.date));
           const booking = await createBooking(body);
           const user = await store.getCurrentUserType;
           if (user && user === 'collaborator') {
@@ -1052,6 +1059,59 @@ export default {
       }
       state.allAttentions = values;
       return { unsubscribe };
+    }
+
+    const addBookingNumberUsed = async (sessionId, queueId, date) => {
+      let ids = [];
+      let blockLimit = 0;
+      console.log("🚀 ~ addBookingNumberUsed ~ blockLimit:", blockLimit);
+      if (state.queue.serviceInfo) {
+        blockLimit = state.queue.serviceInfo.blockLimit;
+      };
+      // caso bloque varios horarios
+      if (state.block && state.block.blockNumbers) {
+        console.log("🚀 ~ addBookingNumberUsed ~ state.block:", state.block);
+        for(let i = 0; i < state.block.blockNumbers.length; i++) {
+          const number = state.block.blockNumbers[i];
+          console.log("🚀 ~ addBookingNumberUsed ~ number:", number);
+          const created = await bookingBlockNumberUsedCollection.add({
+            sessionId: sessionId,
+            blockNumber: number,
+            queueId: queueId,
+            date: date,
+            dateRequested: new Date(),
+            time: new Date().getTime()
+          });
+          ids.push(created.id);
+        }
+        // caso bloque 1 horario
+      } else if (state.block && state.block.number) {
+        console.log("🚀 ~ addBookingNumberUsed ~ state.block:", state.block);
+        const number = state.block.number;
+        const created = await bookingBlockNumberUsedCollection.add({
+          sessionId: sessionId,
+          blockNumber: number,
+          queueId: queueId,
+          date: date,
+          dateRequested: new Date(),
+          time: new Date().getTime()
+        });
+        ids.push(created.id);
+      }
+      setTimeout(async() => {
+        // caso bloque 1 horario
+        if (state.block && state.block.number) {
+          const numbersUsed = await bookingBlockNumberUsedCollection
+          .where('queueId', "==", queueId)
+          .where('date', '==', date);
+          if (numbersUsed.length > blockLimit) {
+            return false;
+          } else {
+            return true;
+          }
+        }
+
+      }, 500)
     }
 
     const getAvailableDatesByCalendarMonth = async (pages) => {
