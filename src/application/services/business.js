@@ -1,10 +1,26 @@
 import { requestBackend, getHeaders } from '../api';
 import { addAdministrator } from './administrator';
+import CryptoJS from 'crypto-js';
+
+export function decrypteData(data) {
+  if (data) {
+    const key = CryptoJS.AES(import.meta.env.VITE_, 'salt', { keySize: 256/32, iterations: 100 });
+    const iv = CryptoJS.enc.Utf8.parse(ivKey);
+    const decrypted = CryptoJS.AES.decrypt({ ciphertext: CryptoJS.enc.Hex.parse(data) }, key, { iv: iv, mode: CryptoJS.mode.CBC });
+    return decrypted.toString(CryptoJS.enc.Utf8);
+  }
+}
 
 const entity = 'business';
 
 export const getBusinessById = async id => {
-  return (await requestBackend.get(`/${entity}/${id}`, await getHeaders())).data;
+  const response = await requestBackend.get(`/${entity}/${id}`, await getHeaders())
+  console.log("🚀 ~ getBusinessById ~ response:", response);
+  const { data } = response;
+  console.log("🚀 ~ getBusinessById ~ data:", data.data);
+  const resp = decrypteData(data);
+  console.log("🚀 ~ getBusinessById ~ resp:", resp);
+  return data.data;
 }
 
 export const getBusinesses = async id => {
