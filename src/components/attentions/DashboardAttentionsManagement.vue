@@ -46,23 +46,15 @@ export default {
       endDate: undefined
     }
   },
-  async beforeMount() {
-    try {
-      this.loading = true;
-      await this.refresh();
-      this.loading = false;
-    } catch (error) {
-      this.loading = false;
-    }
-  },
   methods: {
-    async refresh() {
+    async refresh(page) {
       try {
         this.loading = true;
         let commerceIds = [this.commerce.id];
         if (this.commerces && this.commerces.length > 0) {
           commerceIds = this.commerces.map(commerce => commerce.id);
         }
+        this.page = page ? page : this.page;
         this.attentions = await getAttentionsDetails(this.commerce.id, this.startDate, this.endDate, commerceIds,
           this.page, this.limit, this.daysSinceType, this.daysSinceContacted, this.contactable, this.contacted,
           this.searchText, this.queueId, this.survey, this.asc, this.contactResultType, this.serviceId);
@@ -81,14 +73,16 @@ export default {
         this.loading = false;
       }
     },
-    setPage(pageIn) {
+    async setPage(pageIn) {
       this.page = pageIn;
+      this.refresh();
     },
     async clear() {
       this.daysSinceType = undefined;
       this.daysSinceContacted = undefined;
       this.contactResultType = undefined;
       this.survey = undefined;
+      this.page = 1;
       this.asc = false;
       this.contactable = undefined;
       this.contacted = undefined;
@@ -162,26 +156,26 @@ export default {
       const [ year, month, day ] = date.split('-');
       this.startDate = `${year}-${month}-${day}`;
       this.endDate = `${year}-${month}-${day}`;
-      await this.refresh();
+      await this.refresh(1);
     },
     async getCurrentMonth() {
       const date = new Date().toISOString().slice(0,10);
       const [ year, month, day ] = date.split('-');
       this.startDate = `${year}-${month}-01`;
       this.endDate = `${year}-${month}-${day}`;
-      await this.refresh();
+      await this.refresh(1);
     },
     async getLastMonth() {
       const date = new Date().toISOString().slice(0,10);
       this.startDate = new DateModel(date).substractMonths(1).toString();
       this.endDate = new DateModel(this.startDate).endOfMonth().toString();
-      await this.refresh();
+      await this.refresh(1);
     },
     async getLastThreeMonths() {
       const date = new Date().toISOString().slice(0,10);
       this.startDate = new DateModel(date).substractMonths(3).toString();
       this.endDate = new DateModel(date).substractMonths(1).endOfMonth().toString();
-      await this.refresh();
+      await this.refresh(1);
     }
   },
   computed: {
@@ -189,6 +183,12 @@ export default {
       const { page, daysSinceType, daysSinceContacted, contactResultType, contactable, contacted, survey, asc, queueId, limit, serviceId } = this;
       return {
         page, daysSinceType, daysSinceContacted, contactResultType, contactable, contacted, survey, asc, queueId, limit, serviceId
+      }
+    },
+    visible() {
+      const { showAttentionManagement } = this;
+      return {
+        showAttentionManagement
       }
     }
   },
@@ -211,8 +211,18 @@ export default {
           oldData.serviceId !== newData.serviceId)
         ) {
           this.page = 1;
+          this.refresh();
         }
-        this.refresh();
+      }
+    },
+    visible: {
+      immediate: true,
+      deep: true,
+      async handler() {
+        if (this.showAttentionManagement === true) {
+          this.page = 1;
+          this.refresh();
+        }
       }
     }
   }
@@ -274,7 +284,7 @@ export default {
                     <div class="col-2">
                       <button
                         class="btn btn-sm btn-size fw-bold btn-dark rounded-pill px-3 py-2"
-                        @click="refresh()">
+                        @click="refresh(1)">
                         <span><i class="bi bi-search"></i></span>
                       </button>
                     </div>
@@ -294,7 +304,7 @@ export default {
                     <div class="col-2">
                       <button
                         class="btn btn-sm btn-size fw-bold btn-dark rounded-pill px-3 py-2"
-                        @click="refresh()">
+                        @click="refresh(1)">
                         <span><i class="bi bi-search"></i></span>
                       </button>
                     </div>
@@ -367,7 +377,7 @@ export default {
                   </div>
                   <div class="col-12 col-md-6">
                     <div class="form-check form-switch centered">
-                      <input class="form-check-input m-1" :class="survey === false ? 'bg-danger' : ''" type="checkbox" name="asc" id="asc" v-model="asc" @click="checkAsc($event)">
+                      <input class="form-check-input m-1" :class="asc === false ? 'bg-danger' : ''" type="checkbox" name="asc" id="asc" v-model="asc" @click="checkAsc($event)">
                       <label class="form-check-label metric-card-subtitle" for="asc">{{ asc ? $t("dashboard.asc") :  $t("dashboard.desc") }}</label>
                     </div>
                   </div>
@@ -508,7 +518,7 @@ export default {
   padding: .5rem;
   margin: .5rem;
   border-radius: .5rem;
-  border: 1.5px solid var(--gris-default);
+  border: 1px solid var(--gris-default);
 }
 .filter-card {
   background-color: var(--color-background);

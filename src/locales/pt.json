@@ -38,6 +38,33 @@
   "of": "de",
   "serviceStatus": "Status do serviço",
   "add": "Adicionar",
+  "myUser": {
+    "title": "Meu Usuário",
+    "actions": "Ações",
+    "messages": "Mensagens",
+    "password": "Alterar Senha",
+    "logout": "Sair",
+    "credential": "Credencial:",
+    "user": "Usuário:",
+    "lastSignIn": "Última Coneção:",
+    "markAsRead": "Marcar tudo como lido",
+    "message": {
+      "1": {
+        "title": "Caixa Vazia",
+        "content": "No momento você não tem mensagens pendentes."
+      },
+      "2": {
+        "icon": "bi-key-fill",
+        "title": "Bem-vindo a É a Sua Vez!",
+        "content": "Você ainda não alterou sua senha pela primeira vez. Para sua segurança, convidamos você a alterá-la agora. Para isso, clique em 'Ações' > 'Alterar Senha' e siga as instruções."
+      },
+      "3": {
+        "icon": "bi-whatsapp",
+        "title": "Número Whatsapp Desconectado",
+        "content": "A conexão a Whatsapp para o envio de notificações está inativa. Para reconectar, acesse ao Menu Principal > 'Configurações' > 'Conexão Whatsapp' ou entre em contacto com o administrador."
+      }
+    }
+  },
   "countries": {
     "br": "🇧🇷 Brazil",
     "cl": "🇨🇱 Chile",
@@ -107,6 +134,20 @@
       "CHOOSE_OPTION": "☝️ Selecione 1"
     }
   },
+  "forms": {
+    "types": {
+      "FIRST_ATTENTION": "Primeira Vez",
+      "PRE_ATTENTION": "Pre Atendimento"
+    },
+    "question_types": {
+      "OPEN_TEXT_FIELD": "✏️ Campo Texto",
+      "OPEN_NUMBER_FIELD": "#️⃣ Campo Número",
+      "YES_OR_NOT": "👍 Sim/Nao",
+      "OPEN_WRITING": "✏️ Aberta",
+      "OPEN_OPTIONS": "👆 Selecione N",
+      "CHOOSE_OPTION": "☝️ Selecione 1"
+    }
+  },
   "origin": {
     "REFERENCE": "Referéncia",
     "GOOGLE": "Google",
@@ -153,6 +194,7 @@
     "MONEY": "Dinheiro",
     "BOLETO": "Boleto",
     "PIX": "Pix",
+    "HEALTH_AGREEMENT": "Convenio Saúde",
     "OTHER": "Outro"
   },
   "paymentFiscalNotes": {
@@ -162,13 +204,17 @@
     "null": "N/I",
     "OTHER": "Outro"
   },
-  "productTypes": {
-    "ALL_IN_ONE": "Tudo em Um",
-    "ONLY_SURVEYS": "Só Pesquisas Inteligentes",
-    "QUEUES_BOOKING": "Só Filas e Reservas"
+  "products": {
+    "types": {
+      "ALL_IN_ONE": "Tudo em Um",
+      "ONLY_SURVEYS": "Só Pesquisas Inteligentes",
+      "QUEUES_BOOKING": "Só Filas e Reservas"
+    }
   },
-  "productsTypes": {
-    "SERVICE": "Serviço"
+  "product": {
+    "types": {
+      "SERVICE": "Serviço"
+    }
   },
   "productMeasuresTypes": {
     "MILLILITERS": "Mililitros (ml)",
@@ -184,13 +230,16 @@
     "LITERS": "(L)",
     "UNITS": "(U)"
   },
-  "outcomeTypes": {
-    "OTHER": "Outro",
-    "STANDARD": "Egreso Normal",
-    "SUPPLIER": "Pagamento Fornecedor",
-    "BENEFICIARY": "Pagamento Beneficiário",
-    "COLLABORATOR": "Pagamento Colaborador",
-    "SERVICE": "Pagamento Serviço"
+  "outcomes":  {
+    "types": {
+      "OTHER": "Outro",
+      "STANDARD": "Egreso Normal",
+      "SUPPLIER": "Pagamento Fornecedor",
+      "BENEFICIARY": "Pagamento Beneficiário",
+      "COLLABORATOR": "Pagamento Colaborador",
+      "SERVICE": "Pagamento Serviço",
+      "HEALTH_AGREEMENT": "Convenio Saúde"
+    }
   },
   "civilStatuses": {
     "SINGLE": "Solteiro",
@@ -201,7 +250,7 @@
   },
   "sexs": {
     "MALE": "Masculino",
-    "FEMALE": "Fêmea"
+    "FEMALE": "Feminino"
   },
   "companies": {
     "types": {
@@ -209,15 +258,35 @@
       "SUPPLIER": "Fornecedor",
       "BENEFICIARY": "Beneficiário",
       "COLLABORATOR": "Colaborador",
-      "SERVICE": "Serviço"
+      "SERVICE": "Serviço",
+      "HEALTH_AGREEMENT": "Convenio Saúde"
+    }
+  },
+   "collaborators": {
+    "types": {
+      "STANDARD": "Standard",
+      "FULL": "Full",
+      "ASSISTANT": "Asistente"
+    }
+  },
+  "documents": {
+    "types": {
+      "COMMERCE": "Comércio",
+      "CLIENT": "Cliente"
+    },
+    "options": {
+      "patient_documents": "Documentos Paciente"
     }
   },
   "items": {
     "types": {
       "STANDARD": "Standard",
-      "PSYCHOBIOLOGICAL_HABIT": "H. Psicobiológicos",
-      "TOBACCO_HABIT": "H. Tabaco",
-      "PHYSICAL_EXAM": "Exame Físico"
+      "PERSONAL_HISTORY": "História Pessoal",
+      "PHYSICAL_EXAM": "Exame Físico",
+      "PATIENT_SEX": "Sexo Paciente",
+      "PATIENT_OCCUPATION": "Ocupação Paciente",
+      "PATIENT_CIVIL_STATUS": "Estado Civil Paciente",
+      "PATIENT_DOCUMENTS": "Documentos Paciente"
     }
   },
   "patientHistoryItemFrequenciesTypes": {
@@ -244,7 +313,8 @@
       "email": "E-Mail (EMAIL)",
       "product": "Produto (PRODUCT)",
       "user": "Usuário (USER)",
-      "whatsapp": "Whatsapp (WHATSAPP)"
+      "whatsapp": "Whatsapp (WHATSAPP)",
+      "message": "Message (MESSAGE)"
     },
     "whatsapp-notify-now": {
       "title": "Whatsapp ÈASuaVez",
@@ -441,15 +511,48 @@
     "attention-whatsapp-cancel": {
       "title": "Whatsapp Atendimento Cancelado",
       "description": "Permite enviar mensagem de atendimento cancelado."
+    },
+    "attention-first-form": {
+      "title": "Form Primeira Vez",
+      "description": "Permite ao cliente preencher um formulario a primeira vez que tem um atendimento."
+    },
+    "attention-pre-form": {
+      "title": "Form Pre Atendimento",
+      "description": "Permite ao cliente preencher um formulario antes do atendimento."
+    },
+    "email-bookings-terms-conditions": {
+      "title": "Email Acepta Terminos",
+      "description": "Permite ao cliente aceitar as condições de seriviço."
+    },
+    "attention-user-health-agreement": {
+      "title": "Form Convenio Saúde",
+      "description": "Solicita o Convenio de Saúde ao usuário para obter a senha."
+    },
+    "email-post-attention": {
+      "title": "Email Pos Atendimento",
+      "description": "Permite ao cliente recever um arquivo no email pos atendimento."
+    },
+    "stock-product-recharge": {
+      "title": "Recarrega Stock",
+      "description": "Mensagem Admin pra Recarregar Produto no Nível Baixo."
     }
   },
   "document": {
     "types": {
-      "COMMERCE": "Comércio"
+      "COMMERCE": "Comércio",
+      "CLIENT": "Cliente"
+    },
+    "commerceTypes": {
+      "terms_of_service": "Condições de Serviço",
+      "post_attention": "Pos Atendimento"
     },
     "terms_of_service": {
       "title": "Condições de Serviço",
       "description": "Condições de Serviço do Comércio."
+    },
+    "post_attention": {
+      "title": "Pos Atendimento",
+      "description": "Arquivo Pos Atendimento."
     }
   },
   "paymentMethods": {
@@ -481,7 +584,8 @@
     "totalAmount": "Valor Total:",
     "package": "Pacote:",
     "service": "Serviço:",
-    "outcomeTitle": "Conceito:"
+    "outcomeTitle": "Conceito:",
+    "termsAccepted": "Terms. Aceitados:"
   },
   "searchAdminItem": {
     "message": {
@@ -589,6 +693,7 @@
     "oldClient": "Já sou Cliente",
     "selectTheService": "Selecione o Serviço",
     "procedures": "Sessões:",
+    "healthAgreementText": "Convenio de Saúde",
     "waitlist": {
       "title": "Junte-se à lista de espera!",
       "content": "Neste momento não temos disponibilidade. Você quer ser contatado caso o horário fique disponível?",
@@ -625,7 +730,8 @@
       "origin": "Deve digitar seu origem",
       "code1": "Deve digitar seu código 1",
       "code2": "Deve digitar seu código 2",
-      "code3": "Deve digitar seu código 3"
+      "code3": "Deve digitar seu código 3",
+      "healthAgreementId": "Deve selecionar seu convenio de saúde"
     }
   },
   "attentionNumber": {
@@ -772,6 +878,8 @@
     "blockInfo": "Horário:",
     "cancelled": "Cancelada",
     "newBooking": "Pode solicitar uma nova:",
+    "preAttention": "Formulário Pre Atendimento",
+    "fillPreAttention": "Para ser atendido, você deverá preencher o seguinte formulário:",
     "advice": "* LEMBRE-SE: As pessoas à sua frente e o tempo estimado podem variar. Recomendamos que consulte esta página antes e no dia da sua reserva.",
     "message": {
       "1": {
@@ -875,6 +983,10 @@
       }
     }
   },
+  "userFormAttention": {
+    "title": "Por favor preencha o seguinte formulário:",
+    "fullfilled": "Você já preencheu este formulário!"
+  },
   "collaboratorAttentionValidate": {
     "hello": "Olá!",
     "hello-user": "Olá",
@@ -901,7 +1013,7 @@
     },
     "comment": {
       "label": "Algum comentário no atendimento? (Opcional):",
-      "placeholder": "O usuário foi gentil. Deixou gorjeta."
+      "placeholder": "O usuário foi gentil."
     },
     "message": {
       "1": {
@@ -935,7 +1047,7 @@
           "transfer": "Transfer Atendimento",
           "cancel": "Cancelar Atendimento",
           "patient-history": "Prontuario",
-          "products": "Stock"
+          "products": "Estoque"
         },
         "module": {
           "update": "Atualizar o modulo de atendimento"
@@ -992,7 +1104,9 @@
           "skip": "Pular atendimento",
           "payment-confirm": "Confirmar Pagamento",
           "transfer": "Transfer Atendimento",
-          "cancel": "Cancelar Atendimento"
+          "cancel": "Cancelar Atendimento",
+          "patient-history": "Prontuario",
+          "products": "Estoque"
         },
         "module": {
           "update": "Atualizar o modulo de atendimento"
@@ -1067,7 +1181,7 @@
     "attendQueue": "Atender Fila",
     "packages": "Pacotes Ativos:",
     "pendingPayment": "Pagamentos Pendentes:",
-    "skipPayment": "Procesar pagamento agora:",
+    "processPaymentNow": "Procesar pagamento agora:",
     "confirmInstallments": "Confirmar Parcela:",
     "confirmPayment": "Confirmar Pagamento",
     "fiscalNote": "N. Fiscal",
@@ -1111,6 +1225,10 @@
       "9": {
         "title": "Pacote já foi pagado",
         "content": "Este pacote não presenta pagamentos pendentes."
+      },
+      "10": {
+        "title": "Ups!",
+        "content": "Día desabilitado ou sem horas configuradas."
       }
     },
     "capacitiesList": {
@@ -1126,7 +1244,9 @@
           "skip": "Pular Atendimento",
           "payment-confirm": "Confirmar Pagamento",
           "transfer": "Transfer Atendimento",
-          "cancel": "Cancelar Atendimento"
+          "cancel": "Cancelar Atendimento",
+          "patient-history": "Prontuario",
+          "products": "Estoque"
         },
         "module": {
           "update": "Atualizar o modulo de atendimento"
@@ -1201,7 +1321,9 @@
           "skip": "Pular Atendimento",
           "payment-confirm": "Confirmar Pagamento",
           "transfer": "Transfer Atendimento",
-          "cancel": "Cancelar Atendimento"
+          "cancel": "Cancelar Atendimento",
+          "patient-history": "Prontuario",
+          "products": "Produtos"
         },
         "module": {
           "update": "Atualizar o modulo de atendimento"
@@ -1325,13 +1447,44 @@
       },
       "2": {
         "title": "Obrigado!",
-        "content": "Volte sempre, esperamos você."
+        "content": "Volte sempre, esperamos por você."
       }
     },
     "actions": {
       "1": {
         "action": "Salvar"
       }
+    }
+  },
+  "attentionForm": {
+    "other": "OUTRO",
+    "yesExplain": "Por favor indique detalhes",
+    "like": {
+      "subtitle": "Não, Sim"
+    },
+    "writing": {
+      "placeholder": "Fala conosco"
+    },
+    "message": {
+      "1": {
+        "title": "Obrigado!",
+        "content": "Seus dados ajudará a oferecer-lhe um melhor e mais rápido serviço ."
+      },
+      "2": {
+        "title": "Obrigado!",
+        "content": "Volte sempre, esperamos por você."
+      }
+    },
+    "actions": {
+      "1": {
+        "action": "Salvar"
+      },
+      "2": {
+        "action": "Voltar pra Reserva"
+      }
+    },
+    "validate": {
+      "withoutAnswer": "Deve responder todas as perguntas"
     }
   },
   "dashboard": {
@@ -1377,7 +1530,7 @@
     "contactable": "Contactável",
     "survey": "Pesquisa",
     "keyWord": "Palavras Chave",
-    "search": "🔎 Nome, Telefone ou Email",
+    "search": "🔎 Nome, CPF ou Email",
     "search2": "🔎 CPF, Telefone ou Email",
     "search3": "🔎 CPF or Passaporte",
     "detractor": "Detrator",
@@ -1421,7 +1574,13 @@
     "paymentStatus": "Status de Pagamento",
     "patientHistory": "Prontuario",
     "patientHistoryOf": "Prontuario de",
+    "pendingControls": "Retornos",
+    "pendingBookings": "Reservas",
+    "bookingsOf": "Reservas de",
     "stock": "Estoque",
+    "edit": "Editar",
+    "dataOf": "Dados de",
+    "addClient": "Adicionar Cliente",
     "dates": {
       "from": "Do",
       "to": "a"
@@ -1433,6 +1592,7 @@
     "spyUpdate": "Próxima actualização em: ",
     "comment": "Comentário:",
     "entities": "Palavras chave:",
+    "typeFilter": "Filtrar por Tipo:",
     "tracing": {
       "title": "Gestão de Clientes",
       "filters": {
@@ -1485,6 +1645,9 @@
         "34": "Recebimentos",
         "35": "Confirmadas",
         "36": "Despesas",
+        "37": "A. Cancelado",
+        "38": "R. Cancelada",
+        "39": "Terms y Cond.",
         "graph": {
           "1": "Evolução das Atendimentos",
           "2": "Atendimentos por Linha",
@@ -1645,6 +1808,10 @@
       "client-contacts-management": {
         "title": "Relatório de Contatos (Detalhes)",
         "description": "Baixar arquivo relatório com os resultados dos contatos no intervalo de datas selecionado"
+      },
+      "bookings-management": {
+        "title": "Relatório de Reservas (Detalles)",
+        "description": "Baixar arquivo relatório com os resultados das reservas no intervalo de datas selecionado"
       }
     },
     "capacitiesList": {
@@ -1766,6 +1933,12 @@
         "collection-details": {
           "view": "Ver Detalhes de Cobrança"
         },
+        "bookings-management": {
+          "view": "Ver Reservas (Detalhes)"
+        },
+        "client-data-management": {
+          "view": "Editar Clientes"
+        },
         "reports": {
           "surveys": "Relatório de Pesquisas (Sumário)",
           "indicators": "Relatório de Indicadores",
@@ -1774,7 +1947,8 @@
           "surveys-consolidated": "Relatório de Pesquisas (Consolidado)",
           "attentions-management": "Relatório de Atendimentos (Detalhes)",
           "clients-management": "Relatório de Clientes (Detalhes)",
-          "client-contacts-management": "Relatório de Contatos (Detalhes)"
+          "client-contacts-management": "Relatório de Contatos (Detalhes)",
+          "bookings-management": "Relatório de Reservas (Detalhes)"
         }
       }
     },
@@ -1877,6 +2051,7 @@
     "collaborators-admin": "Colaboradores",
     "permissions-admin": "Permissões",
     "modules-admin": "Módulos",
+    "forms-admin": "Formulários",
     "seeSpy": "Espiadinha",
     "seeMenu": "Menu",
     "business-resume": "Estado do Sistema",
@@ -1886,7 +2061,7 @@
     "go-minisite": "Minisite",
     "outcome-types-admin": "Tipos de Despesa",
     "booking-manage": "Reservas Visão 360°",
-    "company-admin": "Empresas Fornecedoras",
+    "company-admin": "Empresas",
     "patient-history-item-admin": "Itens Prontuario",
     "message": {
       "1": {
@@ -1909,6 +2084,7 @@
           "collaborators-admin": "Gerenciar Colaboradores",
           "permissions-admin": "Gerenciar Permissões",
           "configuration": "Configurações",
+          "forms-admin": "Administrar Formulários",
           "documents": "Documentos",
           "your-plan": "Seu Plano",
           "surveys-admin": "Gerenciar Pesquisas",
@@ -1920,7 +2096,7 @@
           "patients": "Gestão de Pacientes",
           "outcome-types-admin": "Gestão de Tipos de Despesa",
           "booking-manage": "Reservas Visão 360°",
-          "company-admin": "Empresas Fornecedoras",
+          "company-admin": "Empresas",
           "patient-history-item-admin": "Itens Prontuario"
         }
       }
@@ -1944,6 +2120,7 @@
     "product-master-admin": "Produtos",
     "queues-master-admin": "Filas",
     "configuration": "Configurações",
+    "forms-admin": "Administrar Formulários",
     "documents": "Documentos",
     "reports": "Central de Dados",
     "your-plan": "Seu Plano",
@@ -1959,9 +2136,11 @@
     "control-master-admin": "Gestão",
     "go-minisite": "Minisite",
     "outcome-types-master-admin": "Tipos de Despesa",
-    "company-master-admin": "Empresas Fornecedoras",
+    "company-master-admin": "Empresas",
     "patient-history-item-admin": "Itens Prontuario",
-    "bookings-master-admin": "Reservas Visão 360°"
+    "bookings-master-admin": "Reservas Visão 360°",
+    "forms-master-admin": "Formulários",
+    "permissions-master-admin": "Permissões"
   },
   "collaboratorMenu": {
     "welcome": "Bem-vindo!",
@@ -2044,6 +2223,9 @@
     "walkinHelp": "Filas admitem atendimentos hoje sem horários.",
     "sameCommeceHelp": "Essa fila atende no mesmo horário do comércio.",
     "personalizedHelp": "Personalize horários de atendimento diferentes para cada dia.",
+    "specificCalendar": "Calendário Específico:",
+    "selectSpecificDate": "Selecione data no calendário e indique as horas disponíveis:",
+    "addDate": "Adicionar Data",
     "message": {
       "1": {
         "title": "Oh não!",
@@ -2161,7 +2343,7 @@
     }
   },
   "businessCompaniesAdmin": {
-    "title": "Empresas Fornecedoras",
+    "title": "Empresas",
     "commerce": "Selecione uma unidade:",
     "name": "Nome:",
     "tag": "Tag:",
@@ -2244,6 +2426,11 @@
     "value": "Valor:",
     "result": "Resultado:",
     "write": "Escreve aquí",
+    "selectN": "Selecione N:",
+    "select1": "Selecione 1:",
+    "yesNo": "Sim/Não:",
+    "options": "Opções:",
+    "document": "Documento:",
     "message": {
       "1": {
         "title": "Oh não!",
@@ -2533,8 +2720,10 @@
       "consumptionAmount": "Deve digitar a quantidade válida",
       "consumptionLevel": "O consumo digitado e maior quue a quantidade disponível",
       "replacementAmount": "Deve digitar a quantidade válida",
-      "replacementDate": "Deve digitar a data",
-      "productReplacement": "Deve selecionar um recarregamento"
+      "replacementDate": "Deve digitar a data de recarregamento",
+      "productReplacement": "Deve selecionar um recarregamento",
+      "consumptionDate": "Deve digitar a data de consumo",
+      "replacement": "O produto não tem disponibilidade, contacte ao administrador"
     }
   },
   "businessModulesAdmin": {
@@ -2781,6 +2970,13 @@
     "blockTime": "Bloque (Min):",
     "personalized": "Personalizado:",
     "holidays": "Férias:",
+    "specificCalendar": "Calendário Específico:",
+    "selectSpecificDate": "Selecione data no calendário e indique as horas disponíveis:",
+    "addDate": "Adicionar Data",
+    "selectedDate": "Data Selecionada:",
+    "hours": "Horário de Atendimento:",
+    "confirmNotificationDaysBefore": "Días Notificação Confirmação:",
+    "surveyPostAttentionDaysAfter": "Días Depois Pesquisa Satisfação:",
     "message": {
       "1": {
         "title": "Oh não!",
@@ -2815,7 +3011,9 @@
       "keyName": "Você deve digitar o nome web",
       "tag": "Você deve digitar o nome fantasia",
       "url": "Você deve digitar o web site",
-      "address": "Você deve digitar o endereço"
+      "address": "Você deve digitar o endereço",
+      "selectedDate": "Deve selecionar uma data e adicionar horário",
+      "hours": "Hora 'De' deve ser minor que a hora 'Até'"
     }
   },
   "patientHistoryView": {
@@ -2824,12 +3022,13 @@
     "showCurrentIllness": "Doença Atual",
     "showPersonalBackground": "Antecedentes Patológicos",
     "showFamilyBackground": "Antecedentes Familiares",
-    "showPsychobiologicalHabits": "Hábitos Psicobiológicos",
+    "showPatientAnamnese": "História Pessoal",
     "showFunctionalExam": "Exame Funcional",
     "showPhysicalExam": "Exame Físico",
     "showDiagnostic": "Diagnóstico",
     "showMedicalOrder": "Ordem Médica",
     "showControl": "Retornos",
+    "showDocuments": "Documentos",
     "showItensMedicalHistory": "Admin Itens Prontuario",
     "menu": "Detalhes Prontuario",
     "name": "Nome:",
@@ -2851,11 +3050,12 @@
     "currentIllness": "Doença Atual",
     "personalBackground": "Antecedentes Pessoais Patológicos",
     "familyBackground": "Antecedentes Familiares",
-    "psychobiologicalHabits": "Hábitos Psicobiológicos",
+    "patientAnamnese": "História Pessoal",
     "functionalExam": "Exame Funcional",
     "physicalExam": "Exame Físico",
     "diagnostic": "Diagnóstico",
     "medicalOrder": "Ordem Médica",
+    "documents": "Documentos",
     "control": "Retornos",
     "resume": "Resumo",
     "updated": "Atualizado pela última vez no día",
@@ -2867,10 +3067,16 @@
     "add": "Adicionar",
     "attendControl": "Atender Control",
     "update": "Atualizar",
+    "autoSaving": "Salvamento Automático",
+    "clickSave": "Clique em Salvar",
     "message": {
       "1": {
         "title": "Ups!",
         "content": "Não há elementos para mostrar."
+      },
+      "2": {
+        "title": "Ups!",
+        "content": "Não existem tipos de documentos disponíveis para carregar. Contacte o administrador."
       }
     },
     "validate": {
@@ -3154,7 +3360,11 @@
           "whatsapp-notify-five": "Editar Notificação Whatsapp Faltam 5",
           "only-survey": "Editar Modo Só Pesquisa",
           "whatsapp-notify-one": "Editar Notificação Whatsapp Falta 1",
-          "get-number-remote": "Editar Obter Senha remota"
+          "get-number-remote": "Editar Obter Senha remota",
+          "features": "Configurações",
+          "whatsapps": "Conexão Whatsapp",
+          "whatsapps-connect": "Conectar Whatsapp",
+          "whatsapps-disconnect": "Desconectar Whatsapp"
         }
       }
     },
@@ -3170,7 +3380,8 @@
     "feature": "Documento:",
     "add": "Adicionar",
     "file": "Arquivo:",
-    "upload": "Upload",
+    "upload": "Carregar",
+    "uploadNewDocument": "Carregar Documento Novo",
     "message": {
       "1": {
         "title": "Oh não!",
@@ -3243,7 +3454,7 @@
         "collaborators": {
           "view": "Acessar esta seçao",
           "update": "Atualizas os Permissões",
-          "add": "Agregar Permisos"
+          "add": "Adicionar Permisos"
         }
       }
     },
@@ -3454,6 +3665,9 @@
     "return": "Voltar",
     "type": "Tipo:",
     "attentionDefault": "Default:",
+    "addQuestionHelp": "Adiciona uma pergunta personalizada.",
+    "deleteQuestionHelp": "Eliminar a pergunta personalizada.",
+    "typeQuestionHelp": "Tipo de pergunta baseado no tipo de resposta.",
     "typeHelp": "Tipo de Pesquisa. Selecione Personalizado para adicionar perguntas personalizadas.",
     "attentionDefaultHelp": "Pesquisa será mostrada depois do atendimento.",
     "queueHelp": "Você pode asociar uma pesquisa a uma fila específica e compartilhar-la com os seus usuários através de um link.",
@@ -3512,7 +3726,83 @@
       "type": "Você deve selecionar o tipo"
     }
   },
+  "businessFormsAdmin": {
+    "title": "Formulários",
+    "commerce": "Selecione uma unidade:",
+    "return": "Voltar",
+    "type": "Tipo:",
+    "typeQuestionHelp": "Tipo de pergunta baseado no tipo de resposta.",
+    "addQuestionHelp": "Adiciona uma pergunta personalizada.",
+    "orderQuestionHelp": "La pergunta será listada neste ordem.",
+    "deleteQuestionHelp": "Eliminar a pergunta personalizada.",
+    "typeHelp": "Tipo de Formulário. Selecione Personalizado para adicionar perguntas personalizadas.",
+    "queueHelp": "Você pode asociar um Formulário a uma fila específica e compartilhar-la com os seus usuários através de um link.",
+    "active": "Ativo:",
+    "question": "Pergunta:",
+    "addQuestion": "Adicionar Pergunta",
+    "deleteQuestion": "Eliminar Pregunta",
+    "order": "Ordem:",
+    "options": "Opções:",
+    "update": "Atualizar",
+    "add": "Adicionar",
+    "queue": "Fila/Serviço:",
+    "link": "URL Web:",
+    "services": "Serviços:",
+    "go": "Ir",
+    "other": "Outro",
+    "otherOption": "Opção 'Outro':",
+    "otherOpen": "'Outro' Aberto:",
+    "optionsHelp": "Lista de opções de reposta separados por vírgula, sem espaços.",
+    "analize": "Analisar IA:",
+    "listResult": "Registros:",
+    "completePersonalData": "Dados completos do Cliente:",
+    "occupation": "Em que você trabalha? (Ocupação):",
+    "sex": "Seu Sexo:",
+    "civilStatus": "Seu Estado Civil:",
+    "message": {
+      "1": {
+        "title": "Oh não!",
+        "content": "O comércio não existe o está inativo agora. Revise na URL o entre em contato com um colaborador para obter ajuda."
+      },
+      "2": {
+        "title": "Oh não!",
+        "content": "Neste momento não há Formulários."
+      },
+      "3": {
+        "title": "Oh não!",
+        "content": "Você já atingiu o limite de Formulários. Para adicionar mais Formulários, mude de plano ou entre em contato conosco."
+      },
+      "4": {
+        "title": "Oh não!",
+        "content": "Não há Formulários. Valide a informação na seção de comércios."
+      }
+    },
+    "capacitiesList": {
+      "forms": {
+        "admin": {
+          "view": "Acessar esta seçao",
+          "read": "Ver os Formulários",
+          "edit": "Editar os Formulários",
+          "update": "Atualizar os Formulários",
+          "add": "Adicionar Formulários",
+          "limit": "Número limite de Formulários",
+          "unavailable": "Deletar Formulários"
+        }
+      }
+    },
+    "validate": {
+      "type": "Você deve selecionar o tipo"
+    }
+  },
   "permissions": {
+    "sections": {
+      "client": "Gestão Cliente",
+      "document-client": "Documentos Cliente",
+      "dashboard": "Performance Hub",
+      "collaborator": "Ações Colaborador",
+      "patient": "Paciente",
+      "products-stock": "Stock"
+    },
     "activations": {
       "admin": {
         "view": "Acessar Seção - Seção Activaçao de Planos",
@@ -3526,6 +3816,10 @@
       "notify": {
         "whatsapp": "Campo de número Whatsapp para notificaciones",
         "email": "Campo de email para notificaciones"
+      },
+      "admin": {
+        "edit": "Editar dados - Seção Administrar Clientes",
+        "add": "Adicionar dados - Seção Administrar Clientes"
       }
     },
     "businesses": {
@@ -3693,12 +3987,40 @@
       "attention-client-contact": {
         "view": "Ver Contato de Clientes - Seção Performance Hub"
       },
+      "attention-days-since-clients":{
+        "view": "Ver Dias Atendimento Clientes - Section Performance Hub"
+      },
+      "client-contacts-management": {
+        "view": "Ver Contato Clientes - Seção Gestão Clientes"
+      },
+      "tracing": {
+        "view": "Ver Seção - Seção Gestão Clientes"
+      },
+      "attentions-management": {
+        "view": "Ver Seção Atendimentos - Seção Gestão Clientes"
+      },
+      "bookings-management": {
+        "view": "Ver Seção Reservas - Seção Gestão Clientes"
+      },
+      "clients-management": {
+        "view": "Ver Seção Contacto Clientes - Seção Gestão Clientes"
+      },
+      "collection-details":{
+        "view": "Ver Recebidos Detalhes - Seção Financeira"
+      },
+      "client-data-management": {
+        "view": "Ver Seção Cliente - Seção Gestão Clientes"
+      },
       "reports": {
-        "surveys": "Download Relatório Pesquisas (Sumário) Seção Performance Hub",
-        "indicators": "Download Relatório Indicadores Seção Performance Hub",
-        "graphs": "Download Relatório de Tendências Seção Performance Hub",
-        "surveys-management": "Download Relatório Pesquisas (Detalhes) Seção Performance Hub",
-        "surveys-consolidated": "Download Relatório Pesquisas (Consolidado) Seção Performance Hub"
+        "surveys": "Baixar Relatório Pesquisas (Sumário) Seção Performance Hub",
+        "indicators": "Baixar Relatório Indicadores Seção Performance Hub",
+        "graphs": "Baixar Relatório de Tendências Seção Performance Hub",
+        "surveys-management": "Baixar Relatório Pesquisas (Detalhes) Seção Performance Hub",
+        "surveys-consolidated": "Baixar Relatório Pesquisas (Consolidado) Seção Performance Hub",
+        "attentions-management": "Baixar Relatório de Atendimentos",
+        "client-contacts-management": "Baixar Relatório de Contactos",
+        "clients-management": "Baixar Relatório de Clientes (Detalhes)",
+        "bookings-management": "Baixar Relatório de Reservas"
       }
     },
     "executive": {
@@ -3745,13 +4067,35 @@
     },
     "collaborator": {
       "module": {
-        "update": "Atualizar módulo - Seção Atendimentos del Colaborador"
+        "update": "Atualizar módulo - Seção Atendimentos do Colaborador"
       },
       "attention": {
-        "attend": "Atender - Seção Atendimentos del Colaborador",
-        "finish": "Marcar atencão como atendida - Seção Atendimentos del Colaborador",
-        "skip": "Pular Atencão - Seção Atendimentos del Colaborador",
-        "payment-confirm": "Confirmar Pagamento - Seção Atendimentos del Colaborador"
+        "attend": "Atender - Seção Atendimentos do Colaborador",
+        "finish": "Marcar atencão como atendida - Seção Atendimentos do Colaborador",
+        "skip": "Pular Atencão - Seção Atendimentos do Colaborador",
+        "payment-confirm": "Confirmar Pagamento - Seção Atendimentos do Colaborador",
+        "cancel": "Cancelar Atendimento - Seção Atendimentos do Colaborador",
+        "patient-history": "Prontuario - Seção Atendimentos do Colaborador",
+        "products": "Produtos - Seção Atendimentos do Colaborador",
+        "transfer": "Transfer Atendimento - Seção Atendimentos do Colaborador"
+      },
+      "bookings": {
+        "admin": "Gerenciar Reservas",
+        "cancel":"Cancelar Reserva",
+        "confirm": "Confirmar Reservas",
+        "edit": "Editar Reserva",
+        "manage": "Gerenciar Reservas",
+        "transfer": "Transferir Reserva"
+      },
+      "waitlists": {
+        "book": "Reserva Lista de Espera"
+      },
+      "main-menu": {
+        "booking-manage": "Habilitar Gestão Reservas - Menú Principal Colaborador",
+        "dashboard": "Habilitar Performance Hub - Menú Principal Colaborador",
+        "queue-manage": "Habilitar Atender Filas do Día - Menú Principal Colaborador",
+        "tracing": "Habilitar Gestão de Clientes - Menú Principal Colaborador",
+        "product-stock": "Habilitar Gestão de Estoque - Menú Principal Colaborador"
       }
     },
     "roles": {
@@ -3811,6 +4155,48 @@
         "update": "Atualizar dados - Seção Gerenciar Produtos",
         "add": "Adicionar dados - Seção Gerenciar Produtos",
         "limit": "Límite de dados - Seção Gerenciar Produtos"
+      }
+    },
+    "products-stock": {
+      "attentions": {
+        "view": "Ver Seção - Estoque de Atendimentos",
+        "add-consumption": "Adicionar Consumo - Estoque de Atendimentos",
+        "add-replacement": "Adicionar Recarregamento - Estoque de Atendimentos"
+      },
+      "products": {
+        "view": "Ver Seção - Gestão de Estoque",
+        "add-consumption": "Adicionar Consumo - Gestão de Estoque",
+        "add-replacement": "Adicionar Recarregamento - Gestão de Estoque",
+        "view-attention": "Ver Consumo de Atendimentos - Gestão de Estoque",
+        "view-consumption": "Ver Consumo - Gestão de Estoque",
+        "view-replacement":"Ver Recarregamento - Gestão de Estoque"
+      },
+      "reports": {
+        "details": "Reporte Controle de Estoque - Gestão de Estoque",
+        "replacement-details":"Reporte de Recarregamento de Producto - Gestão de Estoque",
+        "consumption-details": "Reporte de Consumo de Producto - Gestão de Estoque"
+      }
+    },
+    "document-client": {
+      "admin": {
+        "view": "Acessar Seção - Gerenciar Documentos Clientes",
+        "read": "Ver dados - Seção Gerenciar Documentos Clientes",
+        "edit": "Editar dados - Seção Gerenciar Documentos Clientes",
+        "update": "Atualizar dados - Seção Gerenciar Documentos Clientes",
+        "add": "Adicionar dados - Seção Gerenciar Documentos Clientes",
+        "limit": "Límite de dados - Seção Gerenciar Documentos Clientes"
+      }
+    },
+    "patient": {
+      "history": {
+        "view": "Acessar Seção - Gerenciar Prontuario",
+        "read": "Ver dados - Seção Gerenciar Prontuario",
+        "edit": "Editar dados - Seção Gerenciar Prontuario",
+        "update": "Atualizar dados - Seção Gerenciar Prontuario",
+        "add": "Adicionar dados - Seção Gerenciar Prontuario",
+        "control-edit": "Editar Retorno Paciente - Sección Administrar Prontuario",
+        "control-update": "Actualizar Retorno Paciente - Sección Administrar Prontuario",
+        "download": "Baixar Prontuario - Sección Administrar Prontuario"
       }
     }
   }

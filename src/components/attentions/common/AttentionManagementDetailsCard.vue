@@ -173,10 +173,10 @@ export default {
                   <span class="fw-bold detail-data-badge-title"> {{ $t('paymentData.paymentCommission') }} </span>
                   <i class="bi bi-coin mx-1"> </i> {{ attention.paymentCommission }}</span>
                 <span v-if="attention.packageId && attention.packageName" class="badge mx-1 detail-data-badge">
-                <span class="fw-bold detail-data-badge-title"> {{ $t('paymentData.package') }} </span>
-                  {{ attention.packageName }}
-                  <span class="badge mx-1 bg-secondary">{{ attention.packageProcedureNumber }} / {{ attention.packageProceduresTotalNumber }}</span>
-                  <i class="bi bi-check-circle-fill green-icon" v-if="attention.packagePaid"> </i>
+                  <span class="fw-bold detail-data-badge-title"> {{ $t('paymentData.package') }} </span>
+                    {{ attention.packageName }}
+                    <span class="badge mx-1 bg-secondary">{{ attention.packageProcedureNumber }} / {{ attention.packageProceduresTotalNumber }}</span>
+                    <i class="bi bi-check-circle-fill green-icon" v-if="attention.packagePaid"> </i>
                 </span>
               </div>
               <hr>
@@ -209,6 +209,10 @@ export default {
                 <span class="fw-bold detail-data-badge-title"> {{ $t('paymentData.service') }} </span>
                 <span v-for="serv in attention.servicesDetails" :key="serv.id" class="badge bg-primary mx-1"> {{ serv.name }}</span>
               </span>
+              <span v-if="attention.termsConditionsToAcceptedAt" class="badge mx-1 detail-data-badge">
+                <span class="fw-bold detail-data-badge-title"> {{ $t('paymentData.termsAccepted') }} </span>
+                <span> {{ getDate(attention.termsConditionsToAcceptedAt) }} </span>
+              </span>
               <br><br>
               <span class="metric-card-details mx-1"><strong>Id:</strong> {{ attention.attentionId }}</span>
               <span class="metric-card-details"><strong>Date:</strong> {{ getDate(attention.createdDate) }}</span>
@@ -227,7 +231,7 @@ export default {
   margin: .5rem;
   margin-bottom: 0;
   border-radius: .5rem;
-  border: 1.5px solid var(--gris-default);
+  border: 1px solid var(--gris-default);
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
   border-bottom: 0;

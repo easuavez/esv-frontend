@@ -8,6 +8,7 @@ import { getPaymentMethods, getPaymentTypes } from '../../../shared/utils/data';
 import { getPendingCommerceBookingsByDate, transferBooking, editBooking } from '../../../application/services/booking';
 import { getQueueById } from '../../../application/services/queue';
 import { getDate } from '../../../shared/utils/date';
+import { formatIdNumber } from '../../../shared/utils/idNumber';
 import Warning from '../../common/Warning.vue';
 import AreYouSure from '../../common/AreYouSure.vue';
 import PaymentForm from '../../payments/PaymentForm.vue';
@@ -77,6 +78,9 @@ export default {
       this.extendedPaymentEntity = !this.extendedPaymentEntity;
       this.extendedEditEntity = false;
       this.extendedTransferEntity = false
+      this.newConfirmationData = {
+        processPaymentNow: false
+      }
     },
     async showEditDetails() {
       this.extendedEditEntity = !this.extendedEditEntity;
@@ -115,7 +119,7 @@ export default {
     },
     validateConfirm(data) {
       this.errorsAdd = [];
-      if (data.packagePaid === false && getActiveFeature(this.commerce, 'booking-confirm-payment', 'PRODUCT')) {
+      if (data.processPaymentNow === true && getActiveFeature(this.commerce, 'booking-confirm-payment', 'PRODUCT')) {
         if(!data.paymentType || data.paymentType.length === 0) {
           this.paymentTypeError = true;
           this.errorsAdd.push('collaboratorBookingsView.validate.paymentType');
@@ -345,14 +349,17 @@ export default {
         if (data.pendingPaymentId) {
           this.newConfirmationData.pendingPaymentId = data.pendingPaymentId;
         }
-        if (data.skipPayment) {
-          this.newConfirmationData.skipPayment = !data.skipPayment;
+        if (data.processPaymentNow !== undefined) {
+          this.newConfirmationData.processPaymentNow = data.processPaymentNow;
         }
-        if (data.packagePaid) {
+        if (data.packagePaid !== undefined) {
           this.newConfirmationData.packagePaid = data.packagePaid;
         }
-        if (data.packagePaid) {
+        if (data.packagePaid !== undefined) {
           this.newConfirmationData.confirmInstallments = data.confirmInstallments;
+        }
+        if (data.processPaymentNow === false) {
+          this.errorsAdd = [];
         }
       };
     },
@@ -365,6 +372,9 @@ export default {
           this.blockToEdit = data.block
         }
       }
+    },
+    formatIdNumber(commerce, idNumber) {
+      return formatIdNumber(commerce, idNumber);
     }
   },
   watch: {
@@ -388,36 +398,43 @@ export default {
 
 <template>
   <div v-if="show && booking">
-    <div class="row metric-card fw-bold">
-      <div class="col centered" v-if="booking.user && booking.user.name">
-        <i class="bi bi-person-circle icon"></i> {{ booking.user.name.split(' ')[0] || 'N/I' }}
+    <div class="row metric-card booking-link"
+      href="#"
+      @click.prevent="showDetails()">
+      <div v-if="booking.servicesDetails" class="idNumber-title lefted">
+        <span v-for="serv in booking.servicesDetails" :key="serv.id" class="badge service-badge bg-primary"> {{ serv.name }} </span>
+        <span v-if="booking.packageId" class="badge bg-secondary service-badge"> <i class="bi bi-box-fill"></i> <span> {{ booking.packageProcedureNumber }} </span> </span>
+      </div>
+      <div class="col lefted fw-bold" v-if="booking.user && booking.user.name">
+        {{ booking.user.name.split(' ')[0].toUpperCase() || 'N/I' }}
         <i v-if="booking.status === 'PENDING'" class="bi bi-clock-fill icon yellow-icon"> </i>
         <i v-if="booking.status === 'CONFIRMED'" class="bi bi-check-circle-fill icon green-icon"> </i>
         <i v-if="booking.confirmationData && booking.confirmationData.paid === true" class="bi bi-coin icon blue-icon"> </i>
         <i v-if="booking.transfered === true" class="bi bi-arrow-left-right icon blue-icon"> </i>
         <i v-if="booking.edited === true" class="bi bi-pencil-fill icon"> </i>
+        <i v-if="booking.termsConditionsAcceptedCode" class="bi bi-person-fill-check mx-1"></i>
       </div>
       <div class="col centered hour-title" v-if="booking.block && booking.block.hourFrom">
         <span> {{ booking.block.hourFrom }} - {{ booking.block.hourTo }} </span>
       </div>
-      <div class="col centered date-title">
-        {{ getDate(booking.date) }}
+      <div class="col-1 centered date-title">
+        <div class="centered">
+          <span
+            href="#"
+            @click.prevent="showDetails()">
+            <span class="details-title"></span>
+            <i class="dark" :class="`bi ${extendedEntity ? 'bi-chevron-up' : 'bi-chevron-down'}`"></i>
+          </span>
+        </div>
       </div>
     </div>
     <div class="details-arrow">
-      <div class="centered">
-        <span
-          href="#"
-          @click.prevent="showDetails()">
-          <span class="details-title">{{ $t("dashboard.details") }}</span>
-          <i class="dark" :class="`bi ${extendedEntity ? 'bi-chevron-up' : 'bi-chevron-down'}`"></i>
-        </span>
-      </div>
+      <div class="centered mb-2"></div>
       <div
         :class="{ show: extendedEntity }"
         class="detailed-data transition-slow">
         <div class="row m-0 centered">
-          <div class="d-block col-12 col-md-4">
+          <div class="d-block col-12 col-md-4 mt-4">
             <div class="col-12 fw-bold">
               <i class="bi bi-person-circle mx-1"></i> {{ booking.user.name || 'N/I' }} {{ booking.user.lastName || '' }}
               <div class="row">
@@ -468,14 +485,14 @@ export default {
               </a>
             </div>
             <div class="lefted">
-              <i class="bi bi-person-vcard mx-1"></i> {{ booking.user.idNumber || 'N/I' }}
+              <i class="bi bi-person-vcard mx-1"></i> {{ formatIdNumber(commerce, booking.user.idNumber) || 'N/I' }}
             </div>
           </div>
         </div>
         <hr>
         <!-- CONFIRMATION DETAILS -->
         <div class="row mx-1 centered" v-if="booking.confirmed === true && booking.confirmationData">
-          <div class="">
+          <div class="mb-2">
             <i class="bi bi-check-circle-fill mx-1"> </i> <span class="mb-1">{{ $t("collaboratorBookingsView.confirmData") }}</span>
           </div>
           <div v-if="booking.confirmationData">
@@ -487,8 +504,9 @@ export default {
             <span v-if="booking.confirmationData.paymentCommission" class="badge rounded-pill bg-warning metric-keyword-tag mx-1 fw-bold"> <i class="bi bi-coin mx-1"> </i> {{ booking.confirmationData.paymentCommission }}</span>
             <span v-if="booking.confirmationData.paymentDate" class="badge rounded-pill bg-secondary metric-keyword-tag mx-1 fw-bold"> {{ getDate(booking.confirmationData.paymentDate) }}</span>
           </div>
-          <hr>
+
         </div>
+        <hr>
         <div class="row mx-1 centered">
           <!-- PAYMENT -->
           <div class="col-4" v-if="getActiveFeature(commerce, 'booking-confirm', 'PRODUCT')">
@@ -543,7 +561,7 @@ export default {
                   :receiveData="receiveData"
                 >
                 </PaymentForm>
-                <button class="btn btn-sm btn-size fw-bold btn-primary rounded-pill px-3 mt-2"
+                <button class="btn btn-sm btn-size fw-bold btn-primary rounded-pill px-3 mt-2 card-action"
                   @click="goConfirm2()"
                   :disabled="booking.status === 'CONFIRMED' || booking.confirmed || !toggles['collaborator.bookings.confirm']">
                   <i class="bi bi-person-check-fill"> </i> {{ $t("collaboratorBookingsView.confirm") }}
@@ -594,12 +612,12 @@ export default {
                   <i class="bi bi-arrow-left-right h5"></i>
                 </div>
                 <div class="text-label mb-1">
-                  <select class="btn btn-md btn-light fw-bold text-dark select" aria-label=".form-select-sm" v-model="queueToTransfer">
+                  <select class="btn btn-sm btn-light fw-bold text-dark select" aria-label="form-select-sm" v-model="queueToTransfer">
                     <option v-for="queue in queuesToTransfer" :key="queue.id" :value="queue.id" id="select-block">{{ queue.name }}</option>
                   </select>
                 </div>
               </div>
-              <button class="btn btn-sm btn-size fw-bold btn-primary rounded-pill px-3 mt-2"
+              <button class="btn btn-sm btn-size fw-bold btn-primary rounded-pill px-3 mt-2 card-action"
                 @click="goTransfer()"
                 :disabled="!queueToTransfer || !toggles['collaborator.bookings.transfer']">
                 <i class="bi bi-person-check-fill"> </i> {{ $t("collaboratorBookingsView.transfer") }}
@@ -657,7 +675,7 @@ export default {
                 >
                 </BookingDatePicker>
               </div>
-              <button class="btn btn-sm btn-size fw-bold btn-primary rounded-pill px-3 mt-2"
+              <button class="btn btn-sm btn-size fw-bold btn-primary rounded-pill px-3 mt-2 card-action"
                 @click="goEdit()"
                 :disabled="!toggles['collaborator.bookings.edit']">
                 <i class="bi bi-person-check-fill"> </i> {{ $t("collaboratorBookingsView.edit") }}
@@ -676,7 +694,7 @@ export default {
         </div>
         <div class="row centered mt-2" v-if="!loading">
           <div class="col-6">
-            <button class="btn btn-sm btn-size fw-bold btn-danger rounded-pill px-3"
+            <button class="btn btn-sm btn-size fw-bold btn-danger rounded-pill px-3 card-action"
               @click="goCancel()"
               :disabled="booking.status === 'USER_CANCELED' || booking.cancelled || !toggles['collaborator.bookings.cancel']"
               >
@@ -684,7 +702,7 @@ export default {
             </button>
           </div>
           <div class="col-6" v-if="getActiveFeature(commerce, 'booking-confirm', 'PRODUCT') && !getActiveFeature(commerce, 'booking-confirm-payment', 'PRODUCT')">
-            <button class="btn btn-md btn-size fw-bold btn-primary rounded-pill px-3"
+            <button class="btn btn-md btn-size fw-bold btn-primary rounded-pill px-3 card-action"
               @click="goConfirm1()"
               :disabled="booking.status === 'CONFIRMED' || booking.confirmed || !toggles['collaborator.bookings.confirm']"
               >
@@ -708,10 +726,7 @@ export default {
           >
           </AreYouSure>
         </div>
-        <div class="m-0 mt-2" v-if="booking.servicesDetails">
-          <span v-for="serv in booking.servicesDetails" :key="serv.id" class="badge rounded-pill bg-primary col fw-bold"> {{ serv.name }}</span>
-        </div>
-        <div class="row m-0 mt-1 centered">
+        <div class="row m-0 my-2 centered">
           <div class="col">
             <span class="metric-card-details mx-1"><strong>Id:</strong> {{ booking.id }}</span>
             <span class="metric-card-details"><strong>Date:</strong> {{ getDate(booking.createdAt) }}</span>
@@ -725,7 +740,6 @@ export default {
 <style scoped>
 .metric-card {
   background-color: var(--color-background);
-  padding: .1rem;
   margin: .5rem;
   margin-bottom: 0;
   border-radius: .5rem;
@@ -733,19 +747,18 @@ export default {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
   border-bottom: 0;
-  line-height: 1.6rem;
+  line-height: 1.2rem;
 }
 .details-arrow {
-  margin: .5rem;
   margin-top: 0;
   border-bottom-left-radius: .5rem;
   border-bottom-right-radius: .5rem;
-  line-height: 1.1rem;
   border: .5px solid var(--gris-default);
   border-top: 0;
+  line-height: .8rem;
 }
 .show {
-  padding: 5px;
+  padding: 1px;
   max-height: 400px !important;
   overflow-y: auto;
 }
@@ -805,12 +818,15 @@ export default {
 }
 .hour-title {
   font-size: .8rem;
-  font-weight: 700;
+  font-weight: 500;
   line-height: .9rem;
   letter-spacing: .01px;
 }
 .icon {
   margin-left: .1rem;
   margin-right: .15rem;
+}
+.booking-link {
+  cursor: pointer;
 }
 </style>

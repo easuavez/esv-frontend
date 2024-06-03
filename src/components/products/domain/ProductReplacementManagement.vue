@@ -59,15 +59,16 @@ export default {
       endDate: undefined
     }
   },
-  beforeMount() { },
   methods: {
-    setPage(pageIn) {
+    async setPage(pageIn) {
       this.page = pageIn;
+      await this.refresh();
     },
     async clear() {
       this.asc = false;
       this.searchText = undefined;
       this.limit = 10;
+      this.page = 1;
       this.startDate = undefined;
       this.endDate = undefined;
       await this.refresh();
@@ -82,7 +83,8 @@ export default {
     async refresh() {
       try {
         this.loading = true;
-        this.newProductReplacements = await getProductsReplacementDetails(this.product.productId, this.page, this.limit, this.asc, this.startDate, this.endDate);
+        this.newProductReplacements = await getProductsReplacementDetails(this.product.productId, this.page, this.limit,
+          this.asc, this.startDate, this.endDate);
         this.updatePaginationData();
         this.loading = false;
       } catch (error) {
@@ -527,7 +529,7 @@ export default {
   padding: .5rem;
   margin: .5rem;
   border-radius: .5rem;
-  border: 1.5px solid var(--gris-default);
+  border: 1px solid var(--gris-default);
 }
 .filter-card {
   background-color: var(--color-background);

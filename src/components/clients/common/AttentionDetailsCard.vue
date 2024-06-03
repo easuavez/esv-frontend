@@ -69,6 +69,7 @@ export default {
       </div>
       <div class="col-6 card-client-title lefted fw-bold" v-if="attention && attention.userName">
         {{ attention.userName?.trim().toUpperCase() || '' }} {{ attention.userLastName?.trim().toUpperCase() || '' }}
+        <span v-if="attention.termsConditionsAcceptedCode"> <i class="bi bi-person-fill-check mx-1"></i> </span>
         <i v-if="attention.surveyId" class="bi bi-star-fill mx-1 yellow-icon"> </i>
         <i v-if="attention.paid !== undefined && attention.paid === true" class="bi bi-coin mx-1 blue-icon"> </i>
         <i v-if="attention.productCounter > 0" class="bi bi-eyedropper"> </i>
@@ -200,6 +201,10 @@ export default {
                 <span class="fw-bold detail-data-badge-title"> {{ $t('paymentData.service') }} </span>
                 <span v-for="serv in attention.servicesDetails" :key="serv.id" class="badge bg-primary mx-1"> {{ serv.name }} </span>
               </span>
+              <span v-if="attention.termsConditionsToAcceptedAt" class="badge mx-1 detail-data-badge">
+                <span class="fw-bold detail-data-badge-title"> {{ $t('paymentData.termsAccepted') }} </span>
+                <span> {{ getDate(attention.termsConditionsToAcceptedAt) }} </span>
+              </span>
               <br><br>
               <span class="metric-card-details mx-1"><strong>Id:</strong> {{ attention.attentionId }}</span>
               <span class="metric-card-details"><strong>Date:</strong> {{ getDate(attention.createdDate) }}</span>
@@ -218,7 +223,7 @@ export default {
   margin: .5rem;
   margin-bottom: 0;
   border-radius: .5rem;
-  border: 1.5px solid var(--gris-default);
+  border: 1px solid var(--gris-default);
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
   border-bottom: 0;

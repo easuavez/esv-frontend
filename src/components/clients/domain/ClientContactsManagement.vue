@@ -40,7 +40,7 @@ export default {
       totalPages: 0,
       daysSinceContacted: undefined,
       contactResultType: undefined,
-      asc: true,
+      asc: false,
       checked: false,
       showFilterOptions: false,
       showAddOption: false,
@@ -64,14 +64,16 @@ export default {
     this.contactResultTypes = getContactResultTypes();
   },
   methods: {
-    setPage(pageIn) {
+    async setPage(pageIn) {
       this.page = pageIn;
+      await this.refresh();
     },
     async clear() {
       this.daysSinceContacted = undefined;
       this.contactResultType = undefined;
       this.asc = true;
       this.searchText = undefined;
+      this.page = 1;
       this.limit = 10;
       this.startDate = undefined;
       this.endDate = undefined;
@@ -571,7 +573,7 @@ export default {
   padding: .5rem;
   margin: .5rem;
   border-radius: .5rem;
-  border: 1.5px solid var(--gris-default);
+  border: 1px solid var(--gris-default);
 }
 .filter-card {
   background-color: var(--color-background);

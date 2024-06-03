@@ -9,7 +9,8 @@ export default {
     content: { type: String, default: '' },
     icon: { type: String, default: 'bi bi-chat' },
     type: { type: String, default: 'normal' },
-    upgrade: { type: Boolean, default: false }
+    upgrade: { type: Boolean, default: false },
+    closable: { type: Boolean, default: false },
   },
   data() {
     return {}
@@ -18,11 +19,12 @@ export default {
 </script>
 
 <template>
-  <div :class="`message {{ type }}`">
+  <div :class="`message {{ type }}`" role="alert" class="alert-error alert alert-secondary alert-dismissible">
     <div class="message-title">
       <div class="row">
         <div :class="upgrade === true ? 'col-8' : 'col-12'">
           <i :class="`bi ${icon}`"></i><span class="m-2"> {{ title }}</span>
+          <button v-if="closable" id="close-alert" type="button" class="btn btn-sm btn-close" data-bs-dismiss="alert" aria-label="Close"> </button>
         </div>
         <div class="col-4 d-flex justify-content-end">
           <Popper

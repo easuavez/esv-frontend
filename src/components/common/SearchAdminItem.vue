@@ -7,17 +7,20 @@ export default {
   components: { Message },
   props: {
     businessItems: { type: Array, default: [] },
+    type: { type: String, default: '' },
     receiveFilteredItems: { type: Function, default: () => {} }
   },
   async setup(props) {
 
     const state = reactive({
       filtered: [],
+      types: [],
       searchText: undefined,
       counter: 0,
       page: 1,
       totalPages: 0,
       limit: 10,
+      selectedType: undefined,
       limits: [10, 20, 50, 100]
     });
 
@@ -29,11 +32,20 @@ export default {
 
     onBeforeMount(async () => {
       state.filtered = businessItems.value;
+      if (businessItems.value && businessItems.value.length > 0) {
+        const types = businessItems.value.filter(item => item.type).map(item => item.type ? item.type : undefined);
+        if (types && types.length > 0) {
+          state.types = Array.from(new Set(types));
+        }
+      }
       refresh(state.filtered);
     })
 
     const clearSearch = () => {
       state.searchText = '';
+      state.selectedType = undefined;
+      state.filtered = businessItems.value;
+      state.page = 1;
       refresh(state.filtered);
     }
 
@@ -63,6 +75,13 @@ export default {
       return {
         searchText,
         limit
+      }
+    })
+
+    const changeType = computed(() => {
+      const { selectedType } = state;
+      return {
+        selectedType
       }
     })
 
@@ -98,10 +117,37 @@ export default {
     )
 
     watch(
+      changeType,
+      async (newData) => {
+        if (newData.selectedType) {
+          const items = businessItems.value;
+          const type = newData.selectedType.toUpperCase();
+          if (items && items.length > 0) {
+            const result = items.filter(item => item.type.toUpperCase().includes(type));
+            state.filtered = result;
+          }
+        } else {
+          state.filtered = businessItems.value;
+        }
+        refresh(state.filtered);
+      }
+    )
+
+    watch(
       changePage,
       async (newData) => {
         if (newData.page) {
-          refresh(businessItems.value);
+          const items = businessItems.value;
+          if (state.selectedType) {
+            const type = state.selectedType.toUpperCase();
+            if (items && items.length > 0) {
+              const result = items.filter(item => item.type.toUpperCase().includes(type));
+              state.filtered = result;
+              refresh(state.filtered);
+            }
+          } else {
+            refresh(businessItems.value);
+          }
         }
       }
     )
@@ -110,7 +156,18 @@ export default {
       changeLimit,
       async (newData) => {
         if (newData.limit) {
-          refresh(businessItems.value);
+          state.page = 1;
+          const items = businessItems.value;
+          if (state.selectedType) {
+            const type = state.selectedType.toUpperCase();
+            if (items && items.length > 0) {
+              const result = items.filter(item => item.type.toUpperCase().includes(type));
+              state.filtered = result;
+              refresh(state.filtered);
+            }
+          } else {
+            refresh(businessItems.value);
+          }
         }
       }
     )
@@ -141,6 +198,15 @@ export default {
             @click="clearSearch()">
             <span><i class="bi bi-eraser-fill"></i></span>
           </button>
+        </div>
+      </div>
+      <div v-if="state.types">
+        <div class="col-12 col-md my-1 filter-card" v-if="state.types && state.types.length > 0">
+          <label class="metric-card-subtitle mx-2" for="select-queue"> {{ $t("dashboard.typeFilter") }} </label>
+          <select class="btn btn-md btn-light fw-bold text-dark select" v-model="state.selectedType">
+            <option v-for="typ in state.types" :key="typ" :value="typ" id="select-queue">{{ $t(`${type}.types.${typ}`) }}</option>
+            <option :key="'ALL'" :value="undefined" id="select-type-all"> {{ $t("dashboard.all") }} </option>
+          </select>
         </div>
       </div>
       <div class="mt-3">

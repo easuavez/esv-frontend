@@ -42,6 +42,33 @@
     "true": "Yes",
     "false": "No"
   },
+  "myUser": {
+    "title": "My User",
+    "actions": "Actions",
+    "messages": "Messages",
+    "password": "Password Change",
+    "logout": "Logout",
+    "credential": "Credential:",
+    "user": "User:",
+    "lastSignIn": "Last Connection:",
+    "markAsRead": "Mark all as read",
+    "message": {
+      "1": {
+        "title": "Empty Mailbox",
+        "content": "At the moment, you don't have pending messages."
+      },
+      "2": {
+        "icon": "bi-key-fill",
+        "title": "Welcome to It's your Turn!",
+        "content": "You haven't changed your password for the first time yet. For your security, we invite you to change it now. To do this, click on 'Actions' > 'Password Change' and follow the instructions."
+      },
+      "3": {
+        "icon": "bi-whatsapp",
+        "title": "Whatsapp Number Disconnected",
+        "content": "The Whatsapp connection to send notifications is inactive. To reconnect it, go to the Main Menu > 'Configurations' > 'Whatsapp Connection' or contact the administrator."
+      }
+    }
+  },
   "countries": {
     "br": "🇧🇷 Brazil",
     "cl": "🇨🇱 Chile",
@@ -91,10 +118,12 @@
       "SELECTABLE": "Selectable"
     }
   },
-  "productTypes": {
-    "ALL_IN_ONE": "All in One",
-    "ONLY_SURVEYS": "Just Smart Surveys",
-    "QUEUES_BOOKING": "Just Queues and Bookings"
+  "products": {
+    "types": {
+      "ALL_IN_ONE": "All in One",
+      "ONLY_SURVEYS": "Just Smart Surveys",
+      "QUEUES_BOOKING": "Just Queues and Bookings"
+    }
   },
   "surveys": {
     "types": {
@@ -106,6 +135,20 @@
     "question_types": {
       "RATING_TO_5": "⭐️ 0-5",
       "RATING_TO_10": "🔢 1-10",
+      "YES_OR_NOT": "👍 Yes/No",
+      "OPEN_WRITING": "✏️ Open",
+      "OPEN_OPTIONS": "👆 Select N",
+      "CHOOSE_OPTION": "☝️ Select 1"
+    }
+  },
+  "forms": {
+    "types": {
+      "FIRST_ATTENTION": "First Attention",
+      "PRE_ATTENTION": "Pre Attention"
+    },
+    "question_types": {
+      "OPEN_TEXT_FIELD": "✏️ Text Field",
+      "OPEN_NUMBER_FIELD": "#️⃣ Number Field",
       "YES_OR_NOT": "👍 Yes/No",
       "OPEN_WRITING": "✏️ Open",
       "OPEN_OPTIONS": "👆 Select N",
@@ -158,6 +201,7 @@
     "MONEY": "Money",
     "BOLETO": "Boleto",
     "PIX": "Pix",
+    "HEALTH_AGREEMENT": "Health Agreement",
     "OTHER": "Other"
   },
   "paymentFiscalNotes": {
@@ -167,8 +211,10 @@
     "null": "N/I",
     "OTHER": "Other"
   },
-  "productsTypes": {
-    "SERVICE": "Service"
+  "product": {
+    "types": {
+      "SERVICE": "Service"
+    }
   },
   "productMeasuresTypes": {
     "MILLILITERS": "Milliliters (ml)",
@@ -184,13 +230,16 @@
     "LITERS": "(L)",
     "UNITS": "(U)"
   },
-  "outcomeTypes": {
-    "OTHER": "Other",
-    "STANDARD": "Normal Outcome",
-    "SUPPLIER": "Provider Payment",
-    "BENEFICIARY": "Beneficiary Payment",
-    "COLLABORATOR": "Collaborator Payment",
-    "SERVICE": "Service Payment"
+  "outcomes": {
+    "types": {
+      "OTHER": "Other",
+      "STANDARD": "Normal Outcome",
+      "SUPPLIER": "Provider Payment",
+      "BENEFICIARY": "Beneficiary Payment",
+      "COLLABORATOR": "Collaborator Payment",
+      "SERVICE": "Service Payment",
+      "HEALTH_AGREEMENT": "Health Agreement"
+    }
   },
   "civilStatuses": {
     "SINGLE": "Single",
@@ -209,15 +258,35 @@
       "SUPPLIER": "Provider",
       "BENEFICIARY": "Beneficiary",
       "COLLABORATOR": "Collaborator",
-      "SERVICE": "Service"
+      "SERVICE": "Service",
+      "HEALTH_AGREEMENT": "Health Agreement"
     }
   },
   "items": {
     "types": {
       "STANDARD": "Standard",
-      "PSYCHOBIOLOGICAL_HABIT": "Psychobiological H.",
-      "TOBACCO_HABIT": "H. Tobacco",
-      "PHYSICAL_EXAM": "Physical Exam"
+      "PERSONAL_HISTORY": "Personal History",
+      "PHYSICAL_EXAM": "Physical Exam",
+      "PATIENT_SEX": "Patient Sex",
+      "PATIENT_OCCUPATION": "Patient Occupation",
+      "PATIENT_CIVIL_STATUS": "Patient Civil Status",
+      "PATIENT_DOCUMENTS": "Patient Documents"
+    }
+  },
+  "collaborators": {
+    "types": {
+      "STANDARD": "Standard",
+      "FULL": "Full",
+      "ASSISTANT": "Assistant"
+    }
+  },
+  "documents": {
+    "types": {
+      "COMMERCE": "Commerce",
+      "CLIENT": "Client"
+    },
+    "options": {
+      "patient_documents": "Patient Documents"
     }
   },
   "patientHistoryItemFrequenciesTypes": {
@@ -244,7 +313,8 @@
       "email": "E-Mail (EMAIL)",
       "product": "Product (PRODUCT)",
       "user": "User (USER)",
-      "whatsapp": "Whatsapp (WHATSAPP)"
+      "whatsapp": "Whatsapp (WHATSAPP)",
+      "message": "Message (MESSAGE)"
     },
     "whatsapp-notify-now": {
       "title": "Notification Whatsapp É a sua vez",
@@ -441,15 +511,48 @@
     "attention-whatsapp-cancel": {
       "title": "Whatsapp Attention Cancelled",
       "description": "Let send the attention cancelled whatsapp message."
+    },
+    "attention-first-form": {
+      "title": "Form First Attention",
+      "description": "Let the client to fill a form the first attention."
+    },
+    "attention-pre-form": {
+      "title": "Form Pre Attention",
+      "description": "Let the client to fill a form before an attention."
+    },
+    "email-bookings-terms-conditions": {
+      "title": "Email Terms Accept",
+      "description": "Let the client to accept the terms and conditions of service."
+    },
+    "attention-user-health-agreement": {
+      "title": "Form Health Agreement",
+      "description": "Request the Health Agreement to the user to obtain a attention number."
+    },
+    "email-post-attention": {
+      "title": "Email Post Attention",
+      "description": "Let the client to receive an email with a document post attention."
+    },
+    "stock-product-recharge": {
+      "title": "Replace Stock",
+      "description": "Message Admin to Replace o Product on Low Level."
     }
   },
   "document": {
     "types": {
-      "COMMERCE": "Commerce"
+      "COMMERCE": "Commerce",
+      "CLIENT": "Client"
+    },
+    "commerceTypes": {
+      "terms_of_service": "Service Conditios",
+      "post_attention": "Post Attention"
     },
     "terms_of_service": {
       "title": "Service Conditions",
       "description": "Commerce Service Conditions"
+    },
+    "post_attention": {
+      "title": "Post Attention",
+      "description": "File Post Atención."
     }
   },
   "paymentMethods": {
@@ -481,7 +584,8 @@
     "totalAmount": "Total Amount:",
     "package": "Package:",
     "service": "Service:",
-    "outcomeTitle": "Reason:"
+    "outcomeTitle": "Reason:",
+    "termsAccepted": "Terms Accepted:"
   },
   "searchAdminItem": {
     "message": {
@@ -589,6 +693,7 @@
     "oldClient": "I'm Client",
     "selectTheService": "Select the Service",
     "procedures": "Procedures:",
+    "healthAgreementText": "Health Agreement",
     "waitlist": {
       "title": "Join the Waitlist!",
       "content": "There's not hours available... Do you want to get adviced if someone cancel and one hour is available?",
@@ -624,7 +729,8 @@
       "origin": "Should set your origin",
       "code1": "Should set your code 1",
       "code2": "Should set your code 2",
-      "code3": "Should set your code 3"
+      "code3": "Should set your code 3",
+      "healthAgreementId": "Should select your health agreement"
     }
   },
   "attentionNumber": {
@@ -771,6 +877,8 @@
     "cancelledTitle": "This booking was",
     "cancelled": "Cancelled",
     "newBooking": "You can request a new one:",
+    "preAttention": "Pre Attention Form",
+    "fillPreAttention": "To be attended, you nedd to fill this form:",
     "advice": "* REMEMBER: The people in front of you and the estimated time may vary since people in front of you can cancel their reservation. We recommend that you consult this page before and on the day of your reservation.",
     "message": {
       "1": {
@@ -873,6 +981,10 @@
         "example": "Type just numbers without especial characters"
       }
     }
+  },
+  "userFormAttention": {
+    "title": "Please, fill this form:",
+    "fullfilled": "You've already filled this form!"
   },
   "collaboratorAttentionValidate": {
     "hello": "Hello!",
@@ -986,7 +1098,9 @@
           "skip": "Skip Attention",
           "payment-confirm": "Confirm Payment",
           "transfer": "Transfer Attention",
-          "cancel": "Cancel Attention"
+          "cancel": "Cancel Attention",
+          "patient-history": "Medical History",
+          "products": "Products"
         },
         "module": {
           "update": "Update attention Module"
@@ -1061,7 +1175,7 @@
     "attendQueue": "Attend Queue",
     "packages": "Active Packages:",
     "pendingPayment": "Pending Payments:",
-    "skipPayment": "Process payment now:",
+    "processPaymentNow": "Process payment now:",
     "confirmInstallments": "Confirm Installment:",
     "confirmPayment": "Confirm Payment",
     "fiscalNote": "F. Note",
@@ -1105,6 +1219,10 @@
       "9": {
         "title": "Package was paid already",
         "content": "This package doesn't hace pending payments."
+      },
+      "10": {
+        "title": "Ups!",
+        "content": "Unavailable day or without configured hours."
       }
     },
     "capacitiesList": {
@@ -1120,7 +1238,9 @@
           "skip": "Skip Attention",
           "payment-confirm": "Confirm Payment",
           "transfer": "Transfer Attention",
-          "cancel": "Cancel Attention"
+          "cancel": "Cancel Attention",
+          "patient-history": "Medical History",
+          "products": "Products"
         },
         "module": {
           "update": "Update attention Module"
@@ -1200,7 +1320,9 @@
           "skip": "Skip Attention",
           "payment-confirm": "Confirm Payment",
           "transfer": "Transfer Attention",
-          "cancel": "Cancel Attention"
+          "cancel": "Cancel Attention",
+          "patient-history": "Medical History",
+          "products": "Products"
         },
         "module": {
           "update": "Update attention Module"
@@ -1333,6 +1455,37 @@
       }
     }
   },
+  "attentionForm": {
+    "other": "OTHER",
+    "yesExplain": "Please give more details",
+    "like": {
+      "subtitle": "No, Yes"
+    },
+    "writing": {
+      "placeholder": "Tell us"
+    },
+    "message": {
+      "1": {
+        "title": "Thanks!",
+        "content": "This information will help us to offer you a better and faster service."
+      },
+      "2": {
+        "title": "Thanks!",
+        "content": "Hope to see you soon."
+      }
+    },
+    "actions": {
+      "1": {
+        "action": "Save"
+      },
+      "2": {
+        "action": "Back to the Booking"
+      }
+    },
+    "validate": {
+      "withoutAnswer": "Should answer all the questions"
+    }
+  },
   "dashboard": {
     "title": "Performance Hub",
     "clients": "Clients",
@@ -1375,7 +1528,7 @@
     "asc": "To minor",
     "desc": "To mayor",
     "keyWord": "Key Words",
-    "search": "🔎 Name, Phone or Email",
+    "search": "🔎 Name, Id or Email",
     "search2": "🔎 Id, Phone or Email",
     "search3": "🔎 Id or Passport",
     "detractor": "Detractor",
@@ -1420,6 +1573,12 @@
     "paymentStatus": "Payment Status",
     "patientHistory": "History",
     "patientHistoryOf": "Medical History of",
+    "pendingControls": "Controls",
+    "pendingBookings": "Bookings",
+    "bookingsOf": "Bookings of",
+    "edit": "Edit",
+    "dataOf": "Data of",
+    "addClient": "Add Client",
     "dates": {
       "from": "From",
       "to": "to"
@@ -1431,6 +1590,7 @@
     "entities": "Key Words:",
     "second": "Seconds",
     "spyUpdate": "Next update in: ",
+    "typeFilter": "Type Filter:",
     "tracing": {
       "title": "Clients Management",
       "filters": {
@@ -1483,6 +1643,9 @@
         "34": "Incomes",
         "35": "Confirmed",
         "36": "Outcomes",
+        "37": "A. Cancelled",
+        "38": "B. Cancelled",
+        "39": "Terms & Cond.",
         "graph": {
           "1": "Attentions Evolution",
           "2": "Attentions by Queue",
@@ -1643,6 +1806,10 @@
       "client-contacts-management": {
         "title": "Client Contacts Report (Details)",
         "description": "Download report file with the results of the clients carried out in the selected date range"
+      },
+      "bookings-management": {
+        "title": "Bookings Report (Details)",
+        "description": "Download report file with the results of the bookings carried out in the selected date range"
       }
     },
     "capacitiesList": {
@@ -1714,7 +1881,7 @@
           "view": "Flujo de Reservas"
         },
         "attention-comments-avg": {
-          "view": "Atenciones comentadas (Promedio)"
+          "view": "Attentions comentadas (Promedio)"
         },
         "graphs-attentions": {
           "view": "Attention Graphs"
@@ -1764,6 +1931,12 @@
         "collection-details": {
           "view": "See Collection Details"
         },
+        "bookings-management": {
+          "view": "See Bookings Details"
+        },
+        "client-data-management": {
+          "view": "Edit Clients"
+        },
         "reports": {
           "surveys": "Surveys Report (Summary)",
           "indicators": "Indicators Report",
@@ -1772,7 +1945,8 @@
           "surveys-consolidated": "Surveys Report (Consolidated)",
           "attentions-management": "Attentions Report (Details)",
           "clients-management": "Clients Report (Details)",
-          "client-contacts-management": "Contacts Report (Details)"
+          "client-contacts-management": "Contacts Report (Details)",
+          "bookings-management": "Bookings Report (Details)"
         }
       }
     },
@@ -1871,6 +2045,7 @@
     "documents": "Documents",
     "reports": "Data Center",
     "your-plan": "Your Plan",
+    "forms-admin": "Forms",
     "collaborators-admin": "Collaborators",
     "permissions-admin": "Permissions",
     "administrators-admin": "Administrators",
@@ -1884,7 +2059,7 @@
     "go-minisite": "Minisite",
     "outcome-types-admin": "Outcome Types",
     "booking-manage": "Bookings 360° Vision",
-    "company-admin": "Provider Companies",
+    "company-admin": "Companies",
     "patient-history-item-admin": "Medical History Items",
     "message": {
       "1": {
@@ -1907,6 +2082,7 @@
           "collaborators-admin": "Collaborator Settings",
           "permissions-admin": "Permissions Settings",
           "administrators-admin": "Administrator Settings",
+          "forms-admin": "Forms Settings",
           "configuration": "Settings",
           "documents": "Documents",
           "your-plan": "Your Plan",
@@ -1919,7 +2095,7 @@
           "patients": "Patients Management",
           "outcome-types-admin": "Outcome Types Management",
           "booking-manage": "Bookings 360° Vision",
-          "company-admin": "Provider Companies",
+          "company-admin": "Companies",
           "patient-history-item-admin": "Medical History Items"
         }
       }
@@ -1970,6 +2146,7 @@
     "service-master-admin": "Services",
     "product-master-admin": "Products",
     "queues-master-admin": "Queues",
+    "forms-admin": "Forms Settings",
     "configuration": "Settings",
     "documents": "Documents",
     "reports": "Data Center",
@@ -1987,7 +2164,9 @@
     "go-minisite": "Minisite",
     "outcome-types-master-admin": "Outcome Types",
     "patient-history-item-master-admin": "Medical History Items",
-    "bookings-master-admin": "Bookings 360° Vision"
+    "bookings-master-admin": "Bookings 360° Vision",
+    "forms-master-admin": "Forms",
+    "permissions-master-admin": "Permissions"
   },
   "businessSectionAtWorkView": {
     "welcome": "Welcome!",
@@ -2042,6 +2221,9 @@
     "walkinHelp": "Queue admits to take attentions today without schedule an specific hour.",
     "sameCommeceHelp": "This queue attends at the same hours of the commerce hours.",
     "personalizedHelp": "Personalize different hours of attention for every day.",
+    "specificCalendar": "Specific Calendar:",
+    "selectSpecificDate": "Select date on calendar e add the available hours:",
+    "addDate": "Add Date",
     "message": {
       "1": {
         "title": "Ups!",
@@ -2154,7 +2336,7 @@
     }
   },
   "businessCompaniesAdmin": {
-    "title": "Provider Companies",
+    "title": "Companies",
     "commerce": "Select a commerce:",
     "return": "Return",
     "name": "Name:",
@@ -2242,6 +2424,11 @@
     "value": "Value:",
     "result": "Result:",
     "write": "Write here",
+    "selectN": "Select N:",
+    "select1": "Select 1:",
+    "yesNo": "Yes/No:",
+    "options": "Options:",
+    "document": "Document:",
     "message": {
       "1": {
         "title": "Ups!",
@@ -2352,7 +2539,7 @@
       "optimumLevel": "You should enter the optimum level",
       "replacementLevel": "You should enter the replacement level",
       "maximumLevel": "You should enter the maximum level",
-      "levels": "Verify if the levels and amounts are valid"
+      "levels": "Seeify if the levels and amounts are valid"
     }
   },
   "businessFinancial" : {
@@ -2445,19 +2632,19 @@
     "return": "Back",
     "products": "Products",
     "attentions": "Attentions",
-    "consuptionsOf": "Consumes of",
+    "consuptionsOf": "Consumptions of",
     "replacementsOf": "Replacements of",
     "replacementLevel": "Replacement level:",
     "optimumLevel": "Optimum level:",
     "actualLevel": "Actual level:",
-    "consuptions": "Consumes",
+    "consuptions": "Consumptions",
     "replacements": "Replacements",
     "expired": "Expired",
     "price": "Total Cost:",
     "replacement": "Replacements Req.",
     "search": "🔎 Name or Code",
     "addReplacement": "New Replacement",
-    "addConsuption": "Add Consume",
+    "addConsuption": "Add Consumption",
     "commerces": "Commerce:",
     "amount": "Quantity:",
     "code": "Code/Batch:",
@@ -2468,7 +2655,7 @@
     "daysToExpired": "Days to Expired:",
     "daysNextReplacement": "Days Next Replacement:",
     "replacementSel": "Replacement:",
-    "consumptionDate": "Consume Date:",
+    "consumptionDate": "Consumption Date:",
     "attentionProducts": "Attention Stock",
     "stock": "Stock",
     "product": "Product:",
@@ -2497,8 +2684,8 @@
         "description": "Download the Replacement Product Report"
       },
       "consumption-details": {
-        "title": "Product Consume Report",
-        "description": "Download the Consume Product Report"
+        "title": "Product Consumption Report",
+        "description": "Download the Consumption Product Report"
       }
     },
     "capacitiesList": {
@@ -2526,10 +2713,12 @@
     "validate": {
       "product": "You should select the Product",
       "consumptionAmount": "You should add the consumption amount",
-      "consumptionLevel": "Consume amount added is bigger than the quantity available",
+      "consumptionLevel": "Consumption amount added is bigger than the quantity available",
       "replacementAmount": "You should add the replacement amount",
       "replacementDate": "You should add the replacement date",
-      "productReplacement": "You should select replacement"
+      "productReplacement": "You should select replacement",
+      "consumptionDate": "You should add the consume date",
+      "replacement": "This product has not availability, get in touch with administrator"
     }
   },
   "businessModulesAdmin": {
@@ -2773,6 +2962,13 @@
     "blockTime": "Block (Min):",
     "personalized": "Personalized:",
     "holidays": "Holidays:",
+    "specificCalendar": "Specific Calendar:",
+    "selectSpecificDate": "Select date on calendar e add the available hours:",
+    "addDate": "Add Date",
+    "selectedDate": "Selected Date:",
+    "hours": "Attention Hours:",
+    "confirmNotificationDaysBefore": "Confirmation Notification Days Before:",
+    "surveyPostAttentionDaysAfter": "Surveys Days Before:",
     "message": {
       "1": {
         "title": "Ups!",
@@ -2806,7 +3002,9 @@
       "keyName": "You should enter the web name",
       "tag": "You should enter the fantasy name",
       "url": "You should enter the web site",
-      "address": "You should enter the address"
+      "address": "You should enter the address",
+      "selectedDate": "Should select a date and add hours",
+      "hours": "Hour 'From' should be minor than hour 'To'"
     }
   },
   "patientHistoryView": {
@@ -2815,12 +3013,13 @@
     "showCurrentIllness": "Current Illness",
     "showPersonalBackground": "Pathological Background",
     "showFamilyBackground": "Family Background",
-    "showPsychobiologicalHabits": "Psychobiological Habits",
+    "showPatientAnamnese": "Personal History",
     "showFunctionalExam": "Functional Exam",
     "showPhysicalExam": "Physical Exam",
     "showDiagnostic": "Diagnostic",
     "showMedicalOrder": "Medical Order",
     "showControl": "Controls",
+    "showDocuments": "Documents",
     "showItensMedicalHistory": "Admin History Items",
     "menu": "History Details",
     "name": "Name:",
@@ -2842,11 +3041,12 @@
     "currentIllness": "Current Illness",
     "personalBackground": "Personal Psychobiological Background",
     "familyBackground": "Family Background",
-    "psychobiologicalHabits": "Psychobiological Habits",
+    "patientAnamnese": "Personal History",
     "functionalExam": "Functional Exam",
     "physicalExam": "Physical Exam",
     "diagnostic": "Diagnostic",
     "medicalOrder": "Medical Order",
+    "documents": "Documents",
     "control": "Controls",
     "resume": "Resume",
     "updated": "Updated for the last time the",
@@ -2858,10 +3058,16 @@
     "add": "Add",
     "attendControl": "Attend Control",
     "update": "Update",
+    "autoSaving": "Autosaving",
+    "clickSave": "Click on Save Button",
     "message": {
       "1": {
         "title": "Ups!",
         "content": "There's not elements to show"
+      },
+      "2": {
+        "title": "Ups!",
+        "content": "There's not types of documents to upload. Get in touch with the administrator."
       }
     },
     "validate": {
@@ -3150,7 +3356,11 @@
           "whatsapp-notify-five": "Edit Notification Whatsapp 5 left",
           "only-survey": "Edit Just Survey Mode",
           "whatsapp-notify-one": "Edit Notification Whatsapp 1 left",
-          "get-number-remote": "Edit Get remote number"
+          "get-number-remote": "Edit Get remote number",
+          "features": "Configurations",
+          "whatsapps": "Whatsapp Connection",
+          "whatsapps-connect": "Connect Whatsapp",
+          "whatsapps-disconnect": "Disconnect Whatsapp"
         }
       }
     },
@@ -3167,6 +3377,7 @@
     "add": "Add",
     "file": "File:",
     "upload": "Upload",
+    "uploadNewDocument": "Upload New Document",
     "message": {
       "1": {
         "title": "Ups!",
@@ -3368,7 +3579,7 @@
   "planSelection": {
     "title": "Just one step away...",
     "subtitle": {
-      "1": "Verify your purchase and press send.",
+      "1": "Seeify your purchase and press send.",
       "2": "Later you will have 24hrs. to realize the payment."
     },
     "canPayWays": "You can pay trough the following ways:",
@@ -3515,7 +3726,87 @@
       "type": "Should select the type"
     }
   },
+  "businessFormsAdmin": {
+    "title": "Forms",
+    "commerce": "Select a commerce:",
+    "return": "Back",
+    "type": "Type:",
+    "typeHelp": "Type of Form. Select Personalized to add personalized questions.",
+    "queueHelp": "You can attach the Form to one specific queue and share it with your clients through the link.",
+    "addQuestionHelp": "Add one personalized question.",
+    "deleteQuestionHelp": "Delete the personalized question.",
+    "typeQuestionHelp": "Type of question based on the answer.",
+    "orderQuestionHelp": "The question will be listed in this order.",
+    "analizeIAQuestionHelp": "The answer will be analized with IA.",
+    "otherOptionQuestionHelp": "Add 'Other' to the options of this question.",
+    "otherOpenQuestionHelp": "Option 'Other' is open, editable by the user.",
+    "active": "Active:",
+    "question": "Question:",
+    "comment": "General comment:",
+    "update": "Update",
+    "addQuestion": "Add Question",
+    "deleteQuestion": "Delete Question",
+    "order": "Order:",
+    "add": "Add",
+    "options": "Options:",
+    "queue": "Queue:",
+    "services": "Services:",
+    "link": "URL Web:",
+    "go": "Go",
+    "other": "Other",
+    "otherOption": "'Other' Option:",
+    "otherOpen": "'Other' Open:",
+    "optionsHelp": "List of answer options splitted by comma, without spaces.",
+    "analize": "Analize AI:",
+    "listResult": "Results:",
+    "completePersonalData": "Complete Client Data:",
+    "occupation": "What is your Occupation:",
+    "sex": "Your Sex:",
+    "civilStatus": "Your Civil Status:",
+    "message": {
+      "1": {
+        "title": "Ups!",
+        "content": "This commerce does not exists or is inactive now. Check the URL or reach out to a commerce associate for help."
+      },
+      "2": {
+        "title": "Oh no!",
+        "content": "At this time there are no service Form."
+      },
+      "3": {
+        "title": "Oh no!",
+        "content": "You have already reached the limit of Form. To add more Form, change your plan or contact us."
+      },
+      "4": {
+        "title": "Oh no!",
+        "content": "Theres no Form. Please check the info at the commerces section."
+      }
+    },
+    "capacitiesList": {
+      "forms": {
+        "admin": {
+          "view": "Get to this section",
+          "read": "See the Form",
+          "edit": "Edit the Form",
+          "update": "Update the Form",
+          "add": "Add Form",
+          "limit": "Limit amount of Form",
+          "unavailable": "Delete Form"
+        }
+      }
+    },
+    "validate": {
+      "type": "Should select the type"
+    }
+  },
   "permissions": {
+    "sections": {
+      "client": "Client Management",
+      "document-client": "Client Documents",
+      "dashboard": "Performance Hub",
+      "collaborator": "Actions Collaborator",
+      "patient": "Patient",
+      "products-stock": "Stock"
+    },
     "activations": {
       "admin": {
         "view": "Get to Section - Section Plan Activation",
@@ -3529,6 +3820,10 @@
       "notify": {
         "whatsapp": "Field of Number Whatsapp para notifications",
         "email": "Field of email para notifications"
+      },
+      "admin": {
+        "edit": "Edit data - Section Client Admin",
+        "add": "Add data - Section Client Admin"
       }
     },
     "businesses": {
@@ -3555,6 +3850,7 @@
         "administrators-admin": "Enable Manage Administrators - Main Menu Business",
         "configuration": "Enable Manage Configurations - Main Menu Business",
         "documents": "Enable Manage Documents - Main Menu Business",
+        "forms-admin": "Enable Manage Forms - Main Menu Business",
         "your-plan": "Enable Tu Plan - Main Menu Business",
         "surveys-admin": "Enable Surveys - Main Menu Business",
         "manage-admin": "Enable Artifacts Admin - Main Menu Business",
@@ -3707,12 +4003,40 @@
       "attention-client-contact": {
         "view": "See Client Contacts - Section Performance Hub"
       },
+      "attention-days-since-clients":{
+        "view": "See Days Since Attention Clients - Section Performance Hub"
+      },
+      "attentions-management": {
+        "view": "See Attentions - Clients Management Section"
+      },
+      "bookings-management": {
+        "view": "See Bookings - Clients Management Section"
+      },
+      "client-contacts-management": {
+        "view": "See Client Contacts - Clients Management Section"
+      },
+      "clients-management": {
+        "view": "See Clients Management - Clients Management Section"
+      },
+      "collection-details":{
+        "view": "See Collection Details - Financial Section"
+      },
+      "tracing": {
+        "view": "See Section - Clients Management Section"
+      },
+      "client-data-management": {
+        "view": "See Client Section - Clients Management Section"
+      },
       "reports": {
-        "surveys": "Download Report Surveys (Summary) Section Performance Hub",
-        "indicators": "Download Report Indicators Section Performance Hub",
-        "graphs": "Download Report de Trends Section Performance Hub",
-        "surveys-management": "Download Report Surveys (Details) Section Performance Hub",
-        "surveys-consolidated": "Download Report Surveys (Consolidated) Section Performance Hub"
+        "surveys": "Download Report Surveys (Summary) - Section Performance Hub",
+        "indicators": "Download Report Indicators - Section Performance Hub",
+        "graphs": "Download Report de Trends - Section Performance Hub",
+        "surveys-management": "Download Report Surveys (Details) - Section Performance Hub",
+        "surveys-consolidated": "Download Report Surveys (Consolidated) - Section Performance Hub",
+        "attentions-management": "Download Report Attentions",
+        "bookings-management": "Download Report Bookings",
+        "client-contacts-management": "Download Report Client Contacts",
+        "clients-management": "Download Report Clients (Details)"
       }
     },
     "executive": {
@@ -3758,13 +4082,35 @@
     },
     "collaborator": {
       "module": {
-        "update": "Update module - Section Attentions of the Collaborator"
+        "update": "Update module - Section Collaborator Attentions"
       },
       "attention": {
-        "attend": "Atender - Section Attentions of the Collaborator",
-        "finish": "Marcar atención como atendida - Section Attentions of the Collaborator",
-        "skip": "Saltar atención - Section Attentions of the Collaborator",
-        "payment-confirm": "Confirm Payment - Section Attentions of the Collaborator"
+        "attend": "Atender - Section Collaborator Attentions",
+        "finish": "Marcar atención como atendida - Section Collaborator Attentions",
+        "skip": "Saltar atención - Section Collaborator Attentions",
+        "payment-confirm": "Confirm Payment - Section Collaborator Attentions",
+        "cancel": "Cancel Attention - Section Collaborator Attentions",
+        "patient-history": "Medical History - Section Collaborator Attentions",
+        "products": "Products - Section Collaborator Attentions",
+        "transfer": "Transfer Attention - Section Collaborator Attentions"
+      },
+      "bookings": {
+        "cancel": "Cancela Bookings",
+        "manage": "Manage Bookings",
+        "confirm": "Confirm Booking",
+        "transfer": "Transfer Bookings",
+        "edit": "Edit Bookings",
+        "admin": "Admin Bookings"
+      },
+      "waitlists": {
+        "book": "Waitlist Reserve"
+      },
+      "main-menu": {
+        "booking-manage": "Enable Bookings Manage - Main Menu Collaborator",
+        "dashboard": "Enable Performance Hub - Main Menu Collaborator",
+        "queue-manage":"Enable Attend Queues of the Day - Main Menu Collaborator",
+        "tracing": "Enable Manage Clients - Main Menu Collaborator",
+        "product-stock":"Enable Stock Manage - Main Menu Collaborator"
       }
     },
     "roles": {
@@ -3824,6 +4170,48 @@
         "update": "Update data - Section Manage Products",
         "add": "Add data - Section Manage Products",
         "limit": "Limit of data - Section Manage Products"
+      }
+    },
+    "products-stock": {
+      "attentions": {
+        "view": "See Section - Stock Attentions",
+        "add-consumption": "Add Consumption - Stock Attentions",
+        "add-replacement": "Add Reposition - Stock Attentions"
+      },
+      "products": {
+        "view": "See Section - Stock Management",
+        "add-consumption": "Add Consumption - Stock Management",
+        "add-replacement": "Add Reposition - Stock Management",
+        "view-attention": "See Consumption Attentions - Stock Management",
+        "view-consumption": "See Consumption - Stock Management",
+        "view-replacement":"See Reposition - Stock Management"
+      },
+      "reports": {
+        "details": "Inform Stock Control - Stock Management",
+        "replacement-details":"Inform Product Reposition - Stock Management",
+        "consumption-details": "Inform Product Consumption - Stock Management"
+      }
+    },
+    "document-client": {
+      "admin": {
+        "view": "Get to this Section - Manage Client Documents",
+        "read": "Read data - Section Manage Client Documents",
+        "edit": "Edit data - Section Manage Client Documents",
+        "update": "Update data - Section Manage Client Documents",
+        "add": "Add data - Section Manage Client Documents",
+        "limit": "Limit of data - Section Manage Client Documents"
+      }
+    },
+    "patient": {
+      "history": {
+        "view": "Get to this Section - Manage Medical History",
+        "read": "Read data - Section Manage Medical History",
+        "edit": "Edit data - Section Manage Medical History",
+        "update": "Update data - Section Manage Medical History",
+        "add": "Add data - Section Manage Medical History",
+        "control-edit": "Edit Control Patient - Section Manage Medical History",
+        "control-update": "Update Control Patien - Section Manage Medical History",
+        "download": "Download History - Section Manage Medical History"
       }
     }
   }

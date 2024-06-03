@@ -80,6 +80,7 @@ export default {
       this.asc = true;
       this.searchText = undefined;
       this.limit = 10;
+      this.page = 1;
       this.startDate = undefined;
       this.endDate = undefined;
       this.incomeStatus = undefined;
@@ -628,7 +629,7 @@ export default {
   margin: .5rem;
   margin-bottom: 0;
   border-radius: .5rem;
-  border: 1.5px solid var(--gris-default);
+  border: 1px solid var(--gris-default);
 }
 .filter-card {
   background-color: var(--color-background);

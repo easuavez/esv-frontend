@@ -376,7 +376,7 @@
   padding: .5rem;
   margin: .1rem;
   border-radius: .5rem;
-  border: 1.5px solid var(--gris-default);
+  border: 1px solid var(--gris-default);
 }
 .card-action {
   font-size: .7rem !important;
@@ -389,7 +389,7 @@
   border-bottom-left-radius: .5rem;
   border-bottom-right-radius: .5rem;
   line-height: 1.1rem;
-  border: 1.5px solid var(--gris-default);
+  border: 1px solid var(--gris-default);
   border-top: 0;
 }
 .searcher {
@@ -478,4 +478,56 @@
 .service-badge {
   margin-right: .2rem;
   margin-top: .1rem;
+}
+.item-card {
+  background-color: var(--color-background);
+  padding: .2rem;
+  margin: .2rem;
+  border-radius: .5rem;
+  border: 1px solid var(--gris-default);
+}
+.parpadea {
+  animation-name: parpadeo !important;
+  animation-duration: 2s !important;
+  animation-timing-function: linear !important;
+  animation-iteration-count: infinite !important;
+
+  -webkit-animation-name:parpadeo !important;
+  -webkit-animation-duration: 2s !important;
+  -webkit-animation-timing-function: linear !important;
+  -webkit-animation-iteration-count: infinite !important;
+}
+@-moz-keyframes parpadeo{
+  0% { opacity: 1.0; }
+  50% { opacity: 0.0; }
+  100% { opacity: 1.0; }
+}
+
+@-webkit-keyframes parpadeo {
+  0% { opacity: 1.0; }
+  50% { opacity: 0.0; }
+   100% { opacity: 1.0; }
+}
+
+@keyframes parpadeo {
+  0% { opacity: 1.0; }
+   50% { opacity: 0.0; }
+  100% { opacity: 1.0; }
+}
+.bounce-enter-active {
+  animation: bounce-in 0.5s;
+}
+.bounce-leave-active {
+  animation: bounce-in 0.5s reverse;
+}
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
 }

@@ -58,9 +58,14 @@ export default {
     },
     showPaymentDetails() {
       this.extendedPaymentEntity = !this.extendedPaymentEntity;
+      this.extendedTransferEntity = false;
+      this.newConfirmationData = {
+        processPaymentNow: true
+      }
     },
     async showTransferDetails() {
       this.extendedTransferEntity = !this.extendedTransferEntity;
+      this.extendedPaymentEntity = false;
       if (this.extendedTransferEntity === true) {
         await this.toTransfer();
       }
@@ -87,7 +92,7 @@ export default {
     },
     validateConfirm(data) {
       this.errorsAdd = [];
-      if (data.packagePaid === false && getActiveFeature(this.commerce, 'attention-confirm-payment', 'PRODUCT')) {
+      if (data.processPaymentNow === true && getActiveFeature(this.commerce, 'attention-confirm-payment', 'PRODUCT')) {
         if(!data.paymentType || data.paymentType.length === 0) {
           this.paymentTypeError = true;
           this.errorsAdd.push('collaboratorBookingsView.validate.paymentType');
@@ -271,14 +276,17 @@ export default {
         if (data.pendingPaymentId) {
           this.newPaymentConfirmationData.pendingPaymentId = data.pendingPaymentId;
         }
-        if (data.skipPayment) {
-          this.newPaymentConfirmationData.skipPayment = !data.skipPayment;
+        if (data.processPaymentNow !== undefined) {
+          this.newPaymentConfirmationData.processPaymentNow = data.processPaymentNow;
         }
-        if (data.packagePaid) {
+        if (data.packagePaid !== undefined) {
           this.newPaymentConfirmationData.packagePaid = data.packagePaid;
         }
-        if (data.packagePaid) {
+        if (data.packagePaid !== undefined) {
           this.newPaymentConfirmationData.confirmInstallments = data.confirmInstallments;
+        }
+        if (data.processPaymentNow === false) {
+          this.errorsAdd = [];
         }
       };
     },
@@ -326,29 +334,41 @@ export default {
 
 <template>
   <div v-if="show && attention">
-    <div class="row metric-card fw-bold">
-      <div class="col-2 centered">
+    <div class="row metric-card attention-link"
+      :href="`#data-attention-${attention.number}`"
+      @click.prevent="showDetails()"
+    >
+      <div v-if="attention.servicesDetails" class="idNumber-title lefted">
+        <span v-for="serv in attention.servicesDetails" :key="serv.id" class="badge service-badge bg-primary p-1"> {{ serv.name }} </span>
+        <span v-if="attention.packageId" class="badge bg-secondary service-badge"> <i class="bi bi-box-fill"></i> <span> {{ attention.packageProcedureNumber }} </span> </span>
+      </div>
+      <div class="col-1 lefted">
         <span class="badge rounded-pill bg-primary metric-keyword-tag mx-1 fw-bold"> {{ attention.number }}</span>
       </div>
-      <div class="col centered" v-if="attention.user && attention.user.name">
-        <i class="bi bi-person-circle mx-1"></i> {{ attention.user.name.split(' ')[0] || 'N/I' }}
+      <div class="col lefted fw-bold" v-if="attention.user && attention.user.name">
+        {{ attention.user.name.split(' ')[0].toUpperCase() || 'N/I' }}
         <i v-if="attention.status === 'PENDING' && (!attention.paid || attention.paid === false)" class="bi bi-clock-fill icon yellow-icon"> </i>
         <i v-if="attention.status === 'PENDING' && (attention.paid || attention.paid === true)" class="bi bi-check-circle-fill icon green-icon"> </i>
         <i v-if="attention.paymentConfirmationData !== undefined && attention.paymentConfirmationData.paid === true" class="bi bi-coin icon blue-icon"> </i>
         <i v-if="attention.productCounter > 0" class="bi bi-eyedropper"> </i>
+        <i v-if="attention.termsConditionsAcceptedCode" class="bi bi-person-fill-check mx-1"></i>
       </div>
       <div class="col centered hour-title" v-if="attention.block && attention.block.hourFrom">
         <span> {{ attention.block.hourFrom }} - {{ attention.block.hourTo }} </span>
       </div>
+      <div class="col-1 centered date-title">
+        <div class="centered">
+          <span
+            href="#"
+            @click.prevent="showDetails()">
+            <span class="details-title"></span>
+            <i class="dark" :class="`bi ${extendedEntity ? 'bi-chevron-up' : 'bi-chevron-down'}`"></i>
+          </span>
+        </div>
+      </div>
     </div>
     <div class="details-arrow">
-      <div class="centered">
-        <span
-          :href="`#data-attention-${attention.number}`"
-          @click.prevent="showDetails()">
-          <span class="details-title">{{ $t("dashboard.details") }}</span>
-          <i class="dark" :class="`bi ${extendedEntity ? 'bi-chevron-up' : 'bi-chevron-down'}`"></i>
-        </span>
+      <div class="centered mb-2">
       </div>
       <div
         :id="`#data-attention-${attention.number}`"
@@ -475,7 +495,7 @@ export default {
                   :receiveData="receiveData"
                 >
                 </PaymentForm>
-                <button class="btn btn-sm btn-size fw-bold btn-primary rounded-pill px-3 mt-2"
+                <button class="btn btn-sm btn-size fw-bold btn-primary rounded-pill px-3 mt-2 card-action"
                   @click="goConfirm()"
                   :disabled="attention.paid || !toggles['collaborator.attention.payment-confirm']">
                   <i class="bi bi-person-check-fill"> </i> {{ $t("collaboratorBookingsView.confirm") }}
@@ -513,11 +533,11 @@ export default {
                 <div class="text-label">
                   <i class="bi bi-arrow-left-right h5"></i>
                 </div>
-                <select class="btn btn-md btn-light fw-bold text-dark select" aria-label=".form-select-sm" v-model="queueToTransfer">
+                <select class="btn btn-sm btn-light fw-bold text-dark select" aria-label=".form-select-sm" v-model="queueToTransfer">
                   <option v-for="queue in queuesToTransfer" :key="queue.id" :value="queue.id" id="select-block">{{ queue.name }}</option>
                 </select>
               </div>
-              <button class="btn btn-sm btn-size fw-bold btn-primary rounded-pill px-3 mt-2"
+              <button class="btn btn-sm btn-size fw-bold btn-primary rounded-pill px-3 mt-2 card-action"
                 @click="goTransfer()"
                 :disabled="!queueToTransfer || !toggles['collaborator.attention.transfer']">
                 <i class="bi bi-person-check-fill"> </i> {{ $t("collaboratorBookingsView.transfer") }}
@@ -541,7 +561,7 @@ export default {
         </div>
         <div class="row mt-2" v-if="!loading">
           <div class="col-6">
-            <button class="btn btn-sm btn-size fw-bold btn-dark rounded-pill px-2"
+            <button class="btn btn-sm btn-size fw-bold btn-dark rounded-pill px-2 card-action"
               @click="goToAttention()"
               :disabled="attention.status === 'USER_CANCELED' || attention.cancelled || !toggles['collaborator.attention.attend']"
               >
@@ -549,7 +569,7 @@ export default {
             </button>
           </div>
           <div class="col-6">
-            <button class="btn btn-sm btn-size fw-bold btn-danger rounded-pill px-2"
+            <button class="btn btn-sm btn-size fw-bold btn-danger rounded-pill px-2 card-action"
               @click="goCancel()"
               :disabled="attention.status === 'USER_CANCELED' || attention.cancelled || !toggles['collaborator.attention.cancel']"
               >
@@ -565,9 +585,6 @@ export default {
           >
           </AreYouSure>
         </div>
-        <div class="m-0 mt-2" v-if="attention.servicesDetails">
-          <span v-for="serv in attention.servicesDetails" :key="serv.id" class="badge rounded-pill bg-primary col fw-bold"> {{ serv.name }}</span>
-        </div>
         <div class="row m-0 mt-1 centered">
           <div class="col">
             <span class="metric-card-details mx-1"><strong>Id:</strong> {{ attention.id }}</span>
@@ -582,7 +599,6 @@ export default {
 <style scoped>
 .metric-card {
   background-color: var(--color-background);
-  padding: .1rem;
   margin: .5rem;
   margin-bottom: 0;
   border-radius: .5rem;
@@ -590,7 +606,7 @@ export default {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
   border-bottom: 0;
-  line-height: 1.6rem;
+  line-height: 1.2rem;
 }
 .details-arrow {
   margin: .5rem;
@@ -602,7 +618,7 @@ export default {
   border-top: 0;
 }
 .show {
-  padding: 10px;
+  padding: 1px;
   max-height: 600px !important;
   overflow-y: auto;
 }
@@ -655,7 +671,7 @@ export default {
 }
 .hour-title {
   font-size: .8rem;
-  font-weight: 700;
+  font-weight: 500;
   line-height: .9rem;
   letter-spacing: .01px;
 }
@@ -670,5 +686,8 @@ export default {
   border-radius: .5rem !important;
   margin-left: 5rem;
   margin-right: 5rem;
+}
+.attention-link {
+  cursor: pointer;
 }
 </style>

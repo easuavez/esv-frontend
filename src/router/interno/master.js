@@ -11,7 +11,7 @@ const BusinessExecutiveReport = () => import('../../views/business/BusinessExecu
 const BusinessAdmin = () => import('../../views/business/BusinessAdmin.vue');
 const BusinessConfiguration = () => import('../../views/business/BusinessConfiguration.vue');
 const BusinessPlan = () => import('../../views/business/BusinessPlan.vue');
-const MasterPermissionsAdmin = () => import('../../views/business/MasterPermissionsAdmin.vue');
+const MasterPermissionsAdmin = () => import('../../views/master/MasterPermissionsAdmin.vue');
 const BusinessPlansAdmin = () => import('../../views/business/BusinessPlansAdmin.vue');
 const BusinessPlanActivationAdmin = () => import('../../views/business/BusinessPlanActivationAdmin.vue');
 const BusinessSurveysAdmin = () => import('../../views/business/BusinessSurveyAdmin.vue');
@@ -24,6 +24,8 @@ const BusinessFinancial = () => import('../../views/business/BusinessFinancial.v
 const BusinessCompaniesAdmin = () => import('../../views/business/BusinessCompaniesAdmin.vue');
 const BusinessPatientHistoryItemAdmin = () => import('../../views/business/BusinessPatientHistoryItemAdmin.vue');
 const BusinessQueueBookings = () => import('../../views/business/BusinessQueueBookings.vue');
+const BusinessFormAdmin = () => import('../../views/business/BusinessFormAdmin.vue');
+const BusinessPermissionsAdmin = () => import('../../views/business/BusinessPermissionsAdmin.vue');
 
 const PrivateMasterRoutes = [
   {
@@ -150,6 +152,16 @@ const PrivateMasterRoutes = [
     path: '/interno/master/bookings-master-admin',
     name: 'bookings-master-admin',
     component: BusinessQueueBookings
+  },
+  {
+    path: '/interno/master/forms-master-admin',
+    name: 'forms-master-adminn',
+    component: BusinessFormAdmin
+  },
+  {
+    path: '/interno/master/permissions-master-admin',
+    name: 'permissions-master-admin',
+    component: BusinessPermissionsAdmin
   },
 ]
 

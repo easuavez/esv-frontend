@@ -6,25 +6,27 @@ import { getQueueById, getGroupedQueueByCommerceId } from '../application/servic
 import { getClientById } from '../application/services/client';
 import { createAttention } from '../application/services/attention';
 import { createBooking, getPendingBookingsBetweenDates } from '../application/services/booking';
-import { getQueueBlockDetailsByDay } from '../application/services/block';
+import { getQueueBlockDetailsByDay, getQueueBlockDetailsBySpecificDayByCommerceId } from '../application/services/block';
 import { createWaitlist } from '../application/services/waitlist';
 import { globalStore } from '../stores';
 import { validateEmail } from '../shared/utils/email';
 import { getActiveFeature } from '../shared/features';
 import { bookingCollection, attentionCollection, bookingBlockNumberUsedCollection, updatedAvailableBookingsByCommerceAndQueue } from '../application/firebase';
-import { getCollaboratorsByCommerceId, getCollaboratorDetailsById } from '../application/services/collaborator';
+import { getDetailsCollaboratorsByCommerceId, getCollaboratorDetailsById } from '../application/services/collaborator';
 import Message from '../components/common/Message.vue';
 import PoweredBy from '../components/common/PoweredBy.vue';
 import CommerceLogo from '../components/common/CommerceLogo.vue';
 import Spinner from '../components/common/Spinner.vue';
 import Alert from '../components/common/Alert.vue';
 import Warning from '../components/common/Warning.vue';
-import NotificationConditions from '../components/domain/NotificationConditions.vue';
+import NotificationConditions from '../components/conditions/NotificationConditions.vue';
 import firebase from 'firebase/app';
 import ClientForm from '../components/domain/ClientForm.vue';
 import QueueForm from '../components/domain/QueueForm.vue';
 import ServiceForm from '../components/domain/ServiceForm.vue';
 import { v4 as uuidv4 } from 'uuid';
+import { validateIdNumber } from '../shared/utils/idNumber';
+import { DateModel } from '../shared/utils/date.model';
 
 export default {
   name: 'CommerceQueuesView',
@@ -47,6 +49,7 @@ export default {
       code1,
       code2,
       code3,
+      healthAgreementId,
       addressCode,
       origin
     } = route.params;
@@ -72,6 +75,24 @@ export default {
         }
       }
     ]);
+    let specificCalendarAttributes = ref([
+      {
+        key: 'Available',
+        highlight: {
+          color: 'green',
+          fillMode: 'light',
+        },
+        dates: []
+      },
+      {
+        key: 'Unavailable',
+        highlight: {
+          color: 'red',
+          fillMode: 'light',
+        },
+        dates: []
+      }
+    ])
     let calendarAttributes = ref([
       {
         key: 'Available',
@@ -135,7 +156,12 @@ export default {
       totalServicesResquested: 0,
       totalDurationRequested: 0,
       amountofBlocksNeeded: 0,
-      sessionId: undefined
+      sessionId: undefined,
+      specificCalendar: false,
+      specificCalendarDays: {},
+      specificCalendarDates: [],
+      specificCalendarDate: undefined,
+      blocksBySpecificCalendarDate: {}
     });
 
     onBeforeMount(async () => {
@@ -144,7 +170,7 @@ export default {
         if (keyName) {
           state.sessionId = uuidv4().toString();
           state.commerce = await getCommerceByKeyName(keyName);
-          state.locale = state.commerce.localeInfo.language;
+          state.locale = state.commerce.localeInfo.language || 'es';
           store.setCurrentCommerce(state.commerce);
           if (client && client !== undefined) {
             const clientById = await getClientById(client);
@@ -157,7 +183,7 @@ export default {
             }
           }
           const [collaborators, groupedQueues] = await Promise.all([
-            getCollaboratorsByCommerceId(state.commerce.id),
+            getDetailsCollaboratorsByCommerceId(state.commerce.id),
             getGroupedQueueByCommerceId(state.commerce.id)
           ]);
           if ((queueId && queueId !== 'undefined') || (queue && queue !== undefined)) {
@@ -188,7 +214,7 @@ export default {
               await getAttention(undefined);
             }
           } else {
-            const queues = state.commerce.queues;
+            const queues = Object.values(groupedQueues).flat();
             state.queues = queues;
             if (queues.length === 1) {
               state.queue = queues[0];
@@ -215,6 +241,7 @@ export default {
         }
         loading.value = false;
       } catch (error) {
+        console.log("🚀 ~ onBeforeMount ~ error:", error);
         loading.value = false;
       }
     })
@@ -275,6 +302,9 @@ export default {
         if (data.code3) {
           state.newUser.code3 = data.code3;
         }
+        if (data.healthAgreementId) {
+          state.newUser.healthAgreementId = data.healthAgreementId;
+        }
         if (data.phoneCode && data.phone) {
           state.phone = data.phone.replace(/[\s~`!@#$%^&*(){}\[\];:"'<,.>?\/\\|_+=-]/g, '');
           state.phoneCode = data.phoneCode.replace(/[\s~`!@#$%^&*(){}\[\];:"'<,.>?\/\\|_+=-]/g, '');
@@ -308,11 +338,20 @@ export default {
       state.selectedServices = services;
       state.totalDurationRequested = state.selectedServices.reduce((acc, service) => acc + (service.serviceInfo.blockTime || service.serviceInfo.estimatedTime), 0);
       state.amountofBlocksNeeded = Math.ceil(state.totalDurationRequested/state.queue.blockTime);
-      if (state.date && state.date !== 'TODAY') {
-        getAvailableBookingSuperBlocks();
+      if (state.specificCalendar === true) {
+        if (state.specificCalendarDate && state.specificCalendarDate !== 'TODAY') {
+          getAvailableBookingSuperBlocks();
+        } else {
+          getAvailableAttentionSuperBlocks();
+        }
       } else {
-        getAvailableAttentionSuperBlocks();
+        if (state.date && state.date !== 'TODAY') {
+          getAvailableBookingSuperBlocks();
+        } else {
+          getAvailableAttentionSuperBlocks();
+        }
       }
+
       setCanBook();
     }
 
@@ -333,6 +372,7 @@ export default {
         state.showToday = false;
         state.showReserve = false;
         state.date = undefined;
+        state.specificCalendarDate = undefined;
         state.block = {};
       }
     }
@@ -344,7 +384,7 @@ export default {
     }
 
     const getBookings = () => {
-      const { unsubscribe } = updatedBookings(formattedDate(state.date));
+      const { unsubscribe } = updatedBookings(formattedDate(state.date || state.specificCalendarDate));
       unsubscribeBookings = unsubscribe;
     }
 
@@ -361,6 +401,7 @@ export default {
             .map(doc => {
               const booking = { id: doc.id, ...doc.data() };
               return booking;
+
             })
         })
       }
@@ -374,12 +415,7 @@ export default {
     }
 
     const isActiveCommerce = (commerce) => {
-      return commerce.active === true &&
-        commerce.queues.length > 0
-    };
-
-    const isActiveQueues = (commerce) => {
-      return commerce !== undefined && commerce.queues.length > 0;
+      return commerce.active === true;
     };
 
     const getFeature = (commerce, name) => {
@@ -452,7 +488,8 @@ export default {
         getActiveFeature(state.commerce, 'attention-user-origin', 'USER') ||
         getActiveFeature(state.commerce, 'attention-user-code1', 'USER') ||
         getActiveFeature(state.commerce, 'attention-user-code2', 'USER') ||
-        getActiveFeature(state.commerce, 'attention-user-code3', 'USER')
+        getActiveFeature(state.commerce, 'attention-user-code3', 'USER') ||
+        getActiveFeature(state.commerce, 'attention-user-health-agreement', 'USER')
       ) {
         return true;
       }
@@ -462,11 +499,6 @@ export default {
 
     const validate = (user) => {
       state.errorsAdd = [];
-      /*if (getActiveFeature(state.commerce, 'attention-user-search', 'USER')) {
-        if (!user.clientId || user.clientId.length === 0) {
-          state.errorsAdd.push('commerceQueuesView.validate.name');
-        }
-      }*/
       if (!user.clientId || user.clientId.length === 0) {
         if (!getActiveFeature(state.commerce, 'attention-user-not-required', 'USER')) {
           if (getActiveFeature(state.commerce, 'attention-user-name', 'USER')) {
@@ -480,7 +512,7 @@ export default {
             }
           }
           if (getActiveFeature(state.commerce, 'attention-user-idNumber', 'USER')) {
-            if (!user.idNumber || user.idNumber.length === 0) {
+            if (!user.idNumber || user.idNumber.length === 0 || !validateIdNumber(state.commerce, user.idNumber)) {
               state.errorsAdd.push('commerceQueuesView.validate.idNumber');
             }
           }
@@ -538,6 +570,11 @@ export default {
               state.errorsAdd.push('commerceQueuesView.validate.code3');
             }
           }
+          if (getActiveFeature(state.commerce, 'attention-user-health-agreement', 'USER')) {
+            if (!user.healthAgreementId || user.healthAgreementId.length === 0) {
+              state.errorsAdd.push('commerceQueuesView.validate.healthAgreementId');
+            }
+          }
         } else {
           if (getActiveFeature(state.commerce, 'attention-user-email', 'USER')) {
             if (!validateEmail(user.email)) {
@@ -591,6 +628,10 @@ export default {
         personalInfo.code3 = user.code3;
         delete user.code3;
       }
+      if (user.healthAgreementId) {
+        personalInfo.healthAgreementId = user.healthAgreementId;
+        delete user.healthAgreementId;
+      }
       user.personalInfo = personalInfo;
       return user;
     }
@@ -616,6 +657,7 @@ export default {
             body = { ...body, servicesId, servicesDetails };
           }
           state.date = undefined;
+          state.specificCalendarDate = undefined;
           const attention = await createAttention(body);
           const user = await store.getCurrentUserType;
           if (user && user === 'collaborator') {
@@ -648,7 +690,7 @@ export default {
           if (isDataActive(state.commerce)) {
             newUser = { ...bodyUser, commerceId: state.commerce.id, notificationOn: state.accept, notificationEmailOn: state.accept, acceptTermsAndConditions: state.accept };
           }
-          let body = { sessionId: state.sessionId, queueId: state.queue.id, channel: state.currentChannel, user: newUser, date: formattedDate(state.date), block: state.block, clientId: state.newUser.clientId };
+          let body = { queueId: state.queue.id, channel: state.currentChannel, user: newUser, date: formattedDate(state.date || state.specificCalendarDate), block: state.block, clientId: state.newUser.clientId };
           if (state.selectedServices && state.selectedServices.length > 0) {
             const servicesId = state.selectedServices.map(serv => serv.id);
             const servicesDetails = state.selectedServices.map(serv => { return { id: serv.id, name: serv.name, tag: serv.tag, procedures: serv.serviceInfo.procedures || 1 } });
@@ -687,7 +729,7 @@ export default {
           if (isDataActive(state.commerce)) {
             newUser = { ...bodyUser, commerceId: state.commerce.id, notificationOn: state.accept, notificationEmailOn: state.accept, acceptTermsAndConditions: state.accept };
           }
-          const body = { queueId: state.queue.id, channel: state.currentChannel, user: newUser, date: formattedDate(state.date), clientId: state.newUser.clientId  }
+          const body = { queueId: state.queue.id, channel: state.currentChannel, user: newUser, date: formattedDate(state.date || state.specificCalendarDate), clientId: state.newUser.clientId  }
           const waitlist = await createWaitlist(body);
           if (waitlist && waitlist.id) {
             state.waitlistCreated = true;
@@ -734,12 +776,23 @@ export default {
       }
     }
 
+    const getBlocksBySpecificDay = () => {
+      if (!state.specificCalendarDate || state.specificCalendarDate === 'TODAY') {
+        const date = formattedDate(new Date());
+        return state.blocksBySpecificCalendarDate[date];
+      } else {
+        const date = formattedDate(state.specificCalendarDate);
+        return state.blocksBySpecificCalendarDate[date];
+      }
+    }
+
     const getQueue = async (queueIn) => {
       state.queue = queueIn;
       if (state.queue.id) {
         if (getActiveFeature(state.commerce, 'booking-block-active', 'PRODUCT')) {
           getDisabledDates();
           state.date = undefined;
+          state.specificCalendarDate = undefined;
           state.block = {};
           state.attentionBlock = {};
         }
@@ -789,6 +842,7 @@ export default {
     const setDate = (date) => {
       if (state.queue.id) {
         state.date = date;
+        state.specificCalendarDate = date;
         state.block = {};
       }
     }
@@ -801,6 +855,7 @@ export default {
       state.attentionBlock = {},
       state.block = {};
       state.date = 'TODAY';
+      state.specificCalendarDate = 'TODAY';
       state.showToday = true;
       state.showReserve = false;
     }
@@ -809,6 +864,7 @@ export default {
       state.block = {};
       state.attentionBlock = {},
       state.date = undefined;
+      state.specificCalendarDate = undefined;
       state.showToday = false;
       state.showReserve = true;
     }
@@ -1005,7 +1061,6 @@ export default {
                       } else {
                         return attention.block?.number;
                       }
-
                     });
                     attentionsReserved.push(reserved);
                   }
@@ -1117,7 +1172,11 @@ export default {
     const getAvailableDatesByCalendarMonth = async (pages) => {
       if (pages && pages.length > 0) {
         const page = pages[0].id;
-        await getAvailableDatesByMonth(`${page}-01`);
+        if (state.specificCalendar === true) {
+          await getAvailableSpecificDatesByMonth(`${page}-01`);
+        } else {
+          await getAvailableDatesByMonth(`${page}-01`);
+        }
       }
     }
 
@@ -1272,6 +1331,72 @@ export default {
       loadingHours.value = false;
     }
 
+    const getAvailableSpecificDatesByMonth = async (date) => {
+      loadingHours.value = true;
+      let availableDates = [];
+      const [year, month] = date.split('-');
+      const thisMonth = +month - 1;
+      const nextMonth = +month;
+      const dateFrom = new Date(+year, thisMonth, 1);
+      const dateTo = new Date(+year, nextMonth, 0);
+      const monthBookings = await getPendingBookingsBetweenDates(state.queue.id, dateFrom, dateTo) || [];
+      const bookingsGroupedByDate = monthBookings.reduce((acc, booking) => {
+        const date = booking.date;
+        if (!acc[date]) {
+          acc[date] = [];
+        }
+        acc[date].push(booking);
+        return acc;
+      }, {});
+      availableDates = await state.specificCalendarDates.map(dat => {
+        const [year, month, day] = dat.split('-');
+        const date = new Date(year, +month - 1, day);
+        return new DateModel(date).toString();
+      });
+      const forDeletion = [];
+      if (availableDates && availableDates.length > 0) {
+        let limit = 1;
+        if (state.queue.serviceInfo !== undefined && state.queue.serviceInfo.blockLimit !== undefined && state.queue.serviceInfo.blockLimit > 0) {
+          limit = state.queue.serviceInfo.blockLimit;
+        }
+        availableDates.forEach(date => {
+          const bookings = bookingsGroupedByDate[date] || [];
+          const blocks = state.blocksBySpecificCalendarDate[date] || [];
+          const blocksNumbers = blocks.map(block => block.number);
+          const bookingsReserved = bookings.map(booking => booking.block.blockNumbers || booking.block.number);
+          const totalBlocksReserved = bookingsReserved.flat(Infinity).sort();
+          const uniqueBlocksReserved = [...new Set(totalBlocksReserved)];
+          uniqueBlocksReserved.forEach(block => {
+            const times = totalBlocksReserved.filter(reserved => reserved === block).length;
+            if (times >= limit && blocksNumbers.every(block => totalBlocksReserved.includes(block)) && !forDeletion.includes(date)) {
+              if (uniqueBlocksReserved.length === blocks.length) {
+                forDeletion.push(date);
+              }
+            }
+          })
+          if (!forDeletion.includes(date) &&
+            date === formattedDate(state.specificCalendarDate) &&
+            (state.availableBookingBlocks.length === 0 && state.availableBookingSuperBlocks.length === 0)) {
+              forDeletion.push(date);
+          }
+        })
+      }
+      const availability = await availableDates.filter(item => !forDeletion.includes(item));
+      const avaliableToCalendar = await availability.map(date => {
+        const [year,month,day] = date.split('-');
+        return new Date(+year, +month - 1, +day);
+      });
+      specificCalendarAttributes.value[0].dates = [];
+      specificCalendarAttributes.value[0].dates.push(...avaliableToCalendar);
+      const forDeletionToCalendar = forDeletion.map(date => {
+        const [year,month,day] = date.split('-');
+        return new Date(+year, +month - 1, +day);
+      });
+      specificCalendarAttributes.value[1].dates = [];
+      specificCalendarAttributes.value[1].dates.push(...forDeletionToCalendar);
+      loadingHours.value = false;
+    }
+
     const changeDate = computed(() => {
       const {
         date
@@ -1326,16 +1451,46 @@ export default {
       }
     })
 
+    const changeSpecificCalendarDate = computed(() => {
+      const {
+        specificCalendarDate
+      } = state;
+      return {
+        specificCalendarDate
+      }
+    })
+
     watch (
       changeQueue,
       async () => {
         if (state.queue && state.queue.id) {
-          state.blocksByDay = await getQueueBlockDetailsByDay(state.queue.id);
+          if (state.queue.serviceInfo && state.queue.serviceInfo.specificCalendar) {
+            state.specificCalendar = true;
+          } else if (state.commerce.serviceInfo && state.commerce.serviceInfo.specificCalendar) {
+            state.specificCalendar = true;
+          } else {
+            state.specificCalendar = false;
+          }
+          if (state.specificCalendar === true) {
+            if (state.queue.serviceInfo && state.queue.serviceInfo.specificCalendarDays) {
+              state.specificCalendarDates = Object.keys(state.queue.serviceInfo.specificCalendarDays) || [];
+              state.specificCalendarDays = state.commerce.serviceInfo.specificCalendarDays;
+              state.specificCalendarDates = Object.keys(state.queue.serviceInfo.specificCalendarDays) || [];
+            } else if (state.commerce.serviceInfo && state.commerce.serviceInfo.specificCalendarDays) {
+              state.specificCalendarDates = Object.keys(state.commerce.serviceInfo.specificCalendarDays) || [];
+              state.specificCalendarDays = state.commerce.serviceInfo.specificCalendarDays;
+              state.specificCalendarDates = Object.keys(state.commerce.serviceInfo.specificCalendarDays) || [];
+            }
+            state.blocksBySpecificCalendarDate = await getQueueBlockDetailsBySpecificDayByCommerceId(state.commerce.id, state.queue.id);
+            state.blocks = getBlocksBySpecificDay();
+          } else {
+            state.blocksByDay = await getQueueBlockDetailsByDay(state.queue.id);
+            state.blocks = getBlocksByDay();
+          }
         }
-        state.blocks = getBlocksByDay();
         state.block = {};
         let currentDate;
-        if (state.date === undefined || state.date === 'TODAY') {
+        if ((state.date === undefined || state.date === 'TODAY') || (state.specificCalendarDate === undefined || state.specificCalendarDate === 'TODAY')) {
           currentDate = new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().slice(0, 10);
         } else {
           currentDate = new Date(new Date(state.date || new Date()).setDate(new Date().getDate() + 1)).toISOString().slice(0, 10);
@@ -1343,7 +1498,11 @@ export default {
         getAvailableBookingBlocks(state.bookings);
         bookingsAvailables();
         getAvailableBookingSuperBlocks();
-        await getAvailableDatesByMonth(currentDate);
+        if (state.specificCalendar === true) {
+          await getAvailableSpecificDatesByMonth(currentDate);
+        } else {
+          await getAvailableDatesByMonth(currentDate);
+        }
       }
     )
 
@@ -1396,7 +1555,7 @@ export default {
       changeBooking,
       async (newData, oldData) => {
         if (newData.allBookings !== oldData.allBookings &&
-          state.date && state.date !== 'TODAY') {
+          ((state.date && state.date !== 'TODAY') || (state.specificCalendarDate && state.specificCalendarDate !== 'TODAY'))) {
           const newIds = newData.allBookings.map(booking => booking.id);
           const oldIds = oldData.allBookings.map(booking => booking.id);
           if (!newIds.every(id => oldIds.includes(id))) {
@@ -1420,15 +1579,21 @@ export default {
             state.groupedBookingsByQueue[state.queue.id] = [];
             state.bookings = [];
           }
+          getAvailableBookingBlocks(state.bookings);
+          getAvailableBookingSuperBlocks();
+          bookingsAvailables();
           let currentDate;
           currentDate = new Date(new Date(state.date || new Date()).setDate(new Date().getDate() + 1)).toISOString().slice(0, 10);
           if (newData.allBookings.length > 0) {
-            await getAvailableDatesByMonth(currentDate);
+            if (state.specificCalendar === true) {
+              if (!state.specificCalendarDate || state.specificCalendarDates.includes(formattedDate(state.specificCalendarDate))) {
+                await getAvailableSpecificDatesByMonth(currentDate);
+              }
+            } else {
+              await getAvailableDatesByMonth(currentDate);
+            }
           }
         }
-        getAvailableBookingBlocks(state.bookings);
-        getAvailableBookingSuperBlocks();
-        bookingsAvailables();
       }
     )
 
@@ -1461,6 +1626,36 @@ export default {
       }
     )
 
+    watch (
+      changeSpecificCalendarDate,
+      async (newData, oldData) => {
+        if (state.specificCalendarDate && state.specificCalendarDate === 'TODAY') {
+          if (getActiveFeature(state.commerce, 'booking-block-active', 'PRODUCT')) {
+            state.blocks = getBlocksBySpecificDay();
+            state.block = {};
+            if (unsubscribeAttentions) {
+              unsubscribeAttentions();
+            }
+            getAttentions();
+          } else {
+            await getAttention(undefined);
+          }
+        } else if (newData.specificCalendarDate && newData.specificCalendarDate !== oldData.specificCalendarDate) {
+          state.blocks = getBlocksBySpecificDay();
+          state.block = {};
+          if (unsubscribeBookings) {
+            unsubscribeBookings();
+          }
+          getBookings();
+        };
+        getAvailableBookingBlocks(state.bookings);
+        getAvailableBookingSuperBlocks();
+        getAvailableAttentionSuperBlocks();
+        bookingsAvailables();
+        attentionsAvailables();
+      }
+    )
+
     return {
       state,
       siteKey,
@@ -1486,15 +1681,16 @@ export default {
       code1,
       code2,
       code3,
+      healthAgreementId,
       addressCode,
       origin,
       client,
+      specificCalendarAttributes,
       formattedDate,
       isDataActive,
       getActiveFeature,
       isActiveCommerce,
       isAvailableCommerce,
-      isActiveQueues,
       goBack,
       getQueue,
       getAttention,
@@ -1531,6 +1727,7 @@ export default {
         <div v-if="isAvailableCommerce(state.commerce)">
           <!-- FORM -->
           <ClientForm
+            :show="true"
             :commerce="state.commerce"
             :name="state.newUser.name || name"
             :lastName="state.newUser.lastName || lastName"
@@ -1545,6 +1742,7 @@ export default {
             :code1="state.newUser.code1 || code1"
             :code2="state.newUser.code2 || code2"
             :code3="state.newUser.code3 || code3"
+            :healthAgreementId="state.newUser.healthAgreementId || healthAgreementId"
             :client="client"
             :errorsAdd="state.errorsAdd"
             :receiveData="receiveData"
@@ -1574,7 +1772,7 @@ export default {
             <div v-if="isActiveCommerce(state.commerce) && !isQueueWalkin()" class="choose-attention py-1">
               <span class="fw-bold"> {{ $t("commerceQueuesView.when") }} </span>
             </div>
-            <div class="row g-1" v-if="isActiveQueues(state.commerce)">
+            <div class="row g-1">
               <div class="col col-md-10 offset-md-1 data-card">
                 <div class="row">
                    <!-- ATTENTION TODAY HOUR -->
@@ -1704,8 +1902,186 @@ export default {
                   </div>
                 </div>
                 <div :class="state.showReserve ? 'collapse mx-2 show' : 'collapse mx-2 hide'" id="booking-date">
-                  <div class="centered">
+                  <!-- SPECIFIC CALENDAR-->
+                  <div v-if="state.specificCalendar" class="centered">
                     <div class="col col-md-9">
+                      <!-- ESCOGER FECHA -->
+                      <div class="choose-attention py-1 pt-2">
+                        <i class="bi bi-calendar-check"></i> <span> {{ $t("commerceQueuesView.selectDay") }} </span>
+                      </div>
+                      <div v-if="!loadingCalendar">
+                        <VDatePicker
+                          :locale="state.locale"
+                          v-model.string="state.specificCalendarDate"
+                          :mask="dateMask"
+                          :min-date="state.minDate"
+                          :max-date="state.maxDate"
+                          :disabled-dates="disabledDates"
+                          :attributes='specificCalendarAttributes'
+                          @did-move="getAvailableDatesByCalendarMonth"
+                        />
+                        <div v-if="state.specificCalendarDate">
+                          <div class="badge rounded-pill bg-secondary py-2 px-5 m-2"><span> {{ formattedDate(state.specificCalendarDate) }} </span></div>
+                        </div>
+                      </div>
+                      <div v-if="loadingCalendar">
+                        <Spinner :show="loadingCalendar"></Spinner>
+                      </div>
+                      <!-- ESCOGER HORARIO -->
+                      <div v-if="getActiveFeature(state.commerce, 'booking-block-active', 'PRODUCT')">
+                        <Spinner :show="loadingHours"></Spinner>
+                        <div v-if="!loadingHours">
+                          <!-- NECESITA MAS DE UN BLOQUE -->
+                          <div v-if="state.amountofBlocksNeeded > 1">
+                            <!-- HAY BLOQUES DISPONIBLES -->
+                            <div v-if="state.availableBookingSuperBlocks &&
+                              state.availableBookingSuperBlocks.length > 0 &&
+                              state.specificCalendarDate" class="mb-2">
+                              <div class="choose-attention py-1 pt-2">
+                                <i class="bi bi-hourglass-split"></i> <span> {{ $t("commerceQueuesView.selectBlock") }} </span>
+                              </div>
+                              <select class="btn btn-md btn-light fw-bold text-dark select" aria-label="form-select-sm" v-model="state.block">
+                                <option v-for="block in state.availableBookingSuperBlocks" :key="block.number" :value="block" id="select-block">{{ block.hourFrom }} - {{ block.hourTo }}</option>
+                              </select>
+                            </div>
+                            <!-- LISTA DE ESPERA -->
+                            <div v-if="state.availableBookingSuperBlocks &&
+                              state.availableBookingSuperBlocks.length === 0 &&
+                              state.specificCalendarDate" class="mb-2">
+                              <div id="waitlist" class="d-grid gap-2 mb-2 waitlist-box mt-3"
+                                v-if="getActiveFeature(state.commerce, 'booking-waitlist-active', 'PRODUCT') &&
+                                  state.specificCalendarDates.includes(formattedDate(state.specificCalendarDate))">
+                                <div class="choose-attention">
+                                  <i class="bi bi-bell-fill"></i> <span class="fw-bold"> {{ $t("commerceQueuesView.waitlist.title") }} </span> <span> {{ $t("commerceQueuesView.waitlist.content") }} </span>
+                                </div>
+                                <button v-if="state.queue.active && !state.waitlistCreated"
+                                  class="btn btn-lg btn-block btn-size fw-bold btn-dark rounded-pill mb-2"
+                                  @click="getWaitList()">
+                                  {{ $t("commerceQueuesView.waitlist.action") }} <i class="bi bi-check-lg"></i>
+                                </button>
+                                <div v-else>
+                                  <Message
+                                    :title="$t('commerceQueuesView.message4.title')"
+                                    :content="$t('commerceQueuesView.message4.content')">
+                                  </Message>
+                                </div>
+                              </div>
+                              <div v-else>
+                                <Message
+                                  :title="$t('commerceQueuesView.message3.title')"
+                                  :content="$t('commerceQueuesView.message3.content')">
+                                </Message>
+                              </div>
+                            </div>
+                          </div>
+                          <!-- NECESITA UN SOLO BLOQUE -->
+                          <div v-else>
+                            <hr>
+                              <!-- HAY BLOQUES DISPONIBLES -->
+                              <div v-if="state.availableBookingBlocks &&
+                                state.availableBookingBlocks.length > 0 &&
+                                state.specificCalendarDate" class="mb-2">
+                                <div class="choose-attention py-1 pt-1">
+                                  <i class="bi bi-hourglass-split"></i> <span> {{ $t("commerceQueuesView.selectBlock") }} </span>
+                                </div>
+                                <select class="btn btn-md btn-light fw-bold text-dark select" aria-label=".form-select-sm" v-model="state.block">
+                                  <option v-for="block in state.availableBookingBlocks" :key="block.number" :value="block" id="select-block">{{ block.hourFrom }} - {{ block.hourTo }}</option>
+                                </select>
+                              </div>
+                              <!-- LISTA DE ESPERA -->
+                              <div v-if="state.availableBookingBlocks &&
+                                state.availableBookingBlocks.length === 0 &&
+                                state.specificCalendarDate" class="mb-1">
+                                <div id="waitlist" class="d-grid gap-2 mb-1 waitlist-box mt-3"
+                                  v-if="getActiveFeature(state.commerce, 'booking-waitlist-active', 'PRODUCT') &&
+                                  state.specificCalendarDates.includes(formattedDate(state.specificCalendarDate))">
+                                  <div class="choose-attention">
+                                    <i class="bi bi-bell-fill"></i> <span class="fw-bold"> {{ $t("commerceQueuesView.waitlist.title") }} </span> <span> {{ $t("commerceQueuesView.waitlist.content") }} </span>
+                                  </div>
+                                  <button v-if="state.queue.active && !state.waitlistCreated"
+                                    class="btn btn-lg btn-block btn-size fw-bold btn-dark rounded-pill mb-2"
+                                    @click="getWaitList()">
+                                    {{ $t("commerceQueuesView.waitlist.action") }} <i class="bi bi-check-lg"></i>
+                                  </button>
+                                  <div v-else>
+                                    <Message
+                                      :title="$t('commerceQueuesView.message4.title')"
+                                      :content="$t('commerceQueuesView.message4.content')">
+                                    </Message>
+                                  </div>
+                                </div>
+                                <div v-else>
+                                  <Message
+                                    :title="$t('commerceQueuesView.message3.title')"
+                                    :content="$t('commerceQueuesView.message3.content')">
+                                  </Message>
+                                </div>
+                              </div>
+                          </div>
+                          <!-- RESUMEN -->
+                          <div v-if="(state.specificCalendarDate && !getActiveFeature(state.commerce, 'booking-block-active', 'PRODUCT')) || (state.specificCalendarDate && getActiveFeature(state.commerce, 'booking-block-active', 'PRODUCT') && state.block && state.block.hourFrom)" class="py-1 mt-4 data-card">
+                            <div class="choose-attention fw-bold mt-2">
+                              <i class="bi bi-clipboard-check-fill"></i> <span> {{ $t("commerceQueuesView.daySelected") }} </span>
+                            </div>
+                            <div>
+                              <div class="subtitle-info mb-1">{{ $t("commerceQueuesView.queueSelected") }}</div>
+                              <div class="badge rounded-pill bg-primary py-2 px-4 mx-1">{{ state.queue.name }} </div>
+                              <span v-for="serv in state.selectedServices" :key="serv.id">
+                                <span class="badge rounded-pill bg-secondary py-2 px-2 mx-1"> {{ serv.name }}</span>
+                              </span>
+                            </div>
+                            <div class="row my-2">
+                              <div class="col-6">
+                                <div class="subtitle-info mb-1">{{ $t("commerceQueuesView.dataSelected") }}</div>
+                                <div class="badge rounded-pill bg-secondary py-2 px-3"><span> {{ formattedDate(state.specificCalendarDate) }} </span></div>
+                              </div>
+                              <div v-if="getActiveFeature(state.commerce, 'booking-block-active', 'PRODUCT') && state.block" class="col-6">
+                                <div class="subtitle-info mb-1">{{ $t("commerceQueuesView.blockSelected") }}</div>
+                                <div class="badge rounded-pill bg-secondary py-2 px-3"><span> {{ state.block.hourFrom }} - {{ state.block.hourTo }} </span></div>
+                              </div>
+                            </div>
+                          </div>
+                          <!-- BOTON CONFIRMAR -->
+                          <div v-if="getActiveFeature(state.commerce, 'booking-block-active', 'PRODUCT') && state.block.number">
+                            <div v-if="state.block.number && state.bookingAvailable === false">
+                              <Alert :show="!!state.bookingAvailable" :stack="990"></Alert>
+                            </div>
+                            <button
+                              type="button"
+                              class="btn-size btn btn-lg btn-block col-9 fw-bold btn-dark rounded-pill mb-2 mt-2"
+                              @click="getBooking()"
+                              :disabled="!state.accept || !state.queue.id || !state.specificCalendarDate"
+                              >
+                              {{ $t("commerceQueuesView.confirm") }} <i class="bi bi-check-lg"></i>
+                            </button>
+                          </div>
+                        </div>
+                        <div v-else-if="getActiveFeature(state.commerce, 'booking-active', 'PRODUCT')">
+                          <button
+                            type="button"
+                            class="btn-size btn btn-lg btn-block col-9 fw-bold btn-dark rounded-pill mb-2 mt-2"
+                            @click="getBooking()"
+                            :disabled="!state.accept || !state.queue.id || !state.specificCalendarDate"
+                            >
+                            {{ $t("commerceQueuesView.confirm") }} <i class="bi bi-check-lg"></i>
+                          </button>
+                        </div>
+                      </div>
+                      <div class="row g-1 errors" id="feedback" v-if="(state.errorsAdd.length > 0)">
+                        <Warning>
+                          <template v-slot:message>
+                            <li v-for="(error, index) in state.errorsAdd" :key="index">
+                              {{ $t(error) }}
+                            </li>
+                          </template>
+                        </Warning>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- NORMAL CALENDAR-->
+                  <div v-else class="centered">
+                    <div class="col col-md-9">
+                      <!-- ESCOGER FECHA -->
                       <div class="choose-attention py-1 pt-2">
                         <i class="bi bi-calendar-check"></i> <span> {{ $t("commerceQueuesView.selectDay") }} </span>
                       </div>
@@ -1727,9 +2103,11 @@ export default {
                       <div v-if="loadingCalendar">
                         <Spinner :show="loadingCalendar"></Spinner>
                       </div>
+                      <!-- ESCOGER HORARIO -->
                       <div v-if="getActiveFeature(state.commerce, 'booking-block-active', 'PRODUCT')">
                         <Spinner :show="loadingHours"></Spinner>
                         <div v-if="!loadingHours">
+                          <!-- NECESITA MAS DE UN BLOQUE -->
                           <div v-if="state.amountofBlocksNeeded > 1">
                             <div v-if="state.availableBookingSuperBlocks &&
                               state.availableBookingSuperBlocks.length > 0 &&
@@ -1737,7 +2115,7 @@ export default {
                               <div class="choose-attention py-1 pt-2">
                                 <i class="bi bi-hourglass-split"></i> <span> {{ $t("commerceQueuesView.selectBlock") }} </span>
                               </div>
-                              <select class="btn btn-md btn-light fw-bold text-dark select" aria-label=".form-select-sm" v-model="state.block">
+                              <select class="btn btn-md btn-light fw-bold text-dark select" aria-label="form-select-sm" v-model="state.block">
                                 <option v-for="block in state.availableBookingSuperBlocks" :key="block.number" :value="block" id="select-block">{{ block.hourFrom }} - {{ block.hourTo }}</option>
                               </select>
                             </div>
@@ -1768,6 +2146,7 @@ export default {
                               </div>
                             </div>
                           </div>
+                          <!-- NECESITA SOLO UN BLOQUE -->
                           <div v-else>
                             <hr>
                             <div v-if="state.availableBookingBlocks &&
@@ -1807,6 +2186,7 @@ export default {
                               </div>
                             </div>
                           </div>
+                          <!-- RESUMEN -->
                           <div v-if="(state.date && !getActiveFeature(state.commerce, 'booking-block-active', 'PRODUCT')) || (state.date && getActiveFeature(state.commerce, 'booking-block-active', 'PRODUCT') && state.block && state.block.hourFrom)" class="py-1 mt-4 data-card">
                             <div class="choose-attention fw-bold mt-2">
                               <i class="bi bi-clipboard-check-fill"></i> <span> {{ $t("commerceQueuesView.daySelected") }} </span>
@@ -1829,6 +2209,7 @@ export default {
                               </div>
                             </div>
                           </div>
+                           <!-- BOTON CONFIRMAR -->
                           <div v-if="getActiveFeature(state.commerce, 'booking-block-active', 'PRODUCT') && state.block.number">
                             <div v-if="state.block.number && state.bookingAvailable === false">
                               <Alert :show="!!state.bookingAvailable" :stack="990"></Alert>
@@ -1842,27 +2223,27 @@ export default {
                               {{ $t("commerceQueuesView.confirm") }} <i class="bi bi-check-lg"></i>
                             </button>
                           </div>
-                          </div>
-                          <div v-else-if="getActiveFeature(state.commerce, 'booking-active', 'PRODUCT')">
-                            <button
-                              type="button"
-                              class="btn-size btn btn-lg btn-block col-9 fw-bold btn-dark rounded-pill mb-2 mt-2"
-                              @click="getBooking()"
-                              :disabled="!state.accept || !state.queue.id || !state.date"
-                              >
-                              {{ $t("commerceQueuesView.confirm") }} <i class="bi bi-check-lg"></i>
-                            </button>
-                          </div>
                         </div>
-                        <div class="row g-1 errors" id="feedback" v-if="(state.errorsAdd.length > 0)">
-                          <Warning>
-                            <template v-slot:message>
-                              <li v-for="(error, index) in state.errorsAdd" :key="index">
-                                {{ $t(error) }}
-                              </li>
-                            </template>
-                          </Warning>
+                        <div v-else-if="getActiveFeature(state.commerce, 'booking-active', 'PRODUCT')">
+                          <button
+                            type="button"
+                            class="btn-size btn btn-lg btn-block col-9 fw-bold btn-dark rounded-pill mb-2 mt-2"
+                            @click="getBooking()"
+                            :disabled="!state.accept || !state.queue.id || !state.date"
+                            >
+                            {{ $t("commerceQueuesView.confirm") }} <i class="bi bi-check-lg"></i>
+                          </button>
                         </div>
+                      </div>
+                      <div class="row g-1 errors" id="feedback" v-if="(state.errorsAdd.length > 0)">
+                        <Warning>
+                          <template v-slot:message>
+                            <li v-for="(error, index) in state.errorsAdd" :key="index">
+                              {{ $t(error) }}
+                            </li>
+                          </template>
+                        </Warning>
+                      </div>
                     </div>
                   </div>
                 </div>

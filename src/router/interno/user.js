@@ -1,6 +1,7 @@
 const UserQueueAttention = () => import('../../views/UserQueueAttention.vue');
 const UserQueueBooking = () => import('../../views/UserQueueBooking.vue');
 const UserQueueWaitlist = () => import('../../views/UserQueueWaitlist.vue');
+const UserFormAttention = () => import('../../views/UserFormAttention.vue');
 
 const PrivateUserRoutes = [
   {
@@ -17,7 +18,22 @@ const PrivateUserRoutes = [
     path: '/interno/waitlist/:id/:block',
     name: 'commerce-queue-waitlist',
     component: UserQueueWaitlist
-  }
+  },
+  {
+    path: '/interno/form/:formId/client/:clientId/booking/:bookingId',
+    name: 'commerce-form-booking',
+    component: UserFormAttention
+  },
+  {
+    path: '/interno/form/:formId/client/:clientId/attention/:attentionId',
+    name: 'commerce-form-attention',
+    component: UserFormAttention
+  },
+  {
+    path: '/interno/acceptterms/booking/:id/:code',
+    name: 'commerce-booking-terms-confirm',
+    component: UserQueueBooking
+  },
 ]
 
 export default PrivateUserRoutes;

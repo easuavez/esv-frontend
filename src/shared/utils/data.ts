@@ -67,6 +67,17 @@ export const getQuestionTypes = () => {
   ]
 }
 
+export const getQuestionFormTypes = () => {
+  return [
+    "OPEN_TEXT_FIELD",
+    "OPEN_NUMBER_FIELD",
+    "YES_OR_NOT",
+    "OPEN_WRITING",
+    "OPEN_OPTIONS",
+    "CHOOSE_OPTION"
+  ]
+}
+
 export const getSurveyTypes = () => {
   return [
     "SIMPLE_CSAT",
@@ -76,12 +87,27 @@ export const getSurveyTypes = () => {
   ]
 }
 
+export const getFormTypes = () => {
+  return [
+    "FIRST_ATTENTION",
+    "PRE_ATTENTION"
+  ]
+}
+
 export const getContactTypes = () => {
   return [
     { id: 'CALL', name: 'CALL' },
     { id: 'EMAIL', name: 'EMAIL' },
     { id: 'MESSAGE', name: 'MESSAGE' },
     { id: 'VISIT', name: 'VISIT' }
+  ]
+}
+
+export const getCollaboratorTypes = () => {
+  return [
+    { type: 'STANDARD', name: 'Standard' },
+    { type: 'ASSISTANT', name: 'Assistant' },
+    { type: 'FULL', name: 'Full' }
   ]
 }
 
@@ -95,27 +121,28 @@ export const getContactResultTypes = () => {
 
 export const getPaymentTypes = () => {
   return [
-    { id: 'PAID', name: 'PAID' },
     { id: 'TOTALLY', name: 'TOTALLY' },
     { id: 'PARTIAL', name: 'PARTIAL' },
     { id: 'TRIAL', name: 'TRIAL' },
     { id: 'EVALUATION', name: 'EVALUATION' },
     { id: 'PROMOTION', name: 'PROMOTION' },
     { id: 'RETURN', name: 'RETURN' },
+    { id: 'PAID', name: 'PAID' }
   ]
 }
 
 export const getPaymentMethods = () => {
   return [
-    { id: 'PAID', name: 'PAID' },
     { id: 'CREDIT_CARD', name: 'CREDIT_CARD' },
     { id: 'DEBIT_CARD', name: 'DEBIT_CARD' },
-    { id: 'WIRE_TRANSFER', name: 'WIRE_TRANSFER' },
+    { id: 'PIX', name: 'PIX' },
+    { id: 'HEALTH_AGREEMENT', name: 'HEALTH_AGREEMENT' },
+    { id: 'PAID', name: 'PAID' },
     { id: 'DEPOSIT', name: 'DEPOSIT' },
     { id: 'CHECK', name: 'CHECK' },
     { id: 'MONEY', name: 'MONEY' },
     { id: 'BOLETO', name: 'BOLETO' },
-    { id: 'PIX', name: 'PIX' }
+    { id: 'WIRE_TRANSFER', name: 'WIRE_TRANSFER' }
   ]
 }
 
@@ -197,15 +224,17 @@ export const getCompanyTypes = () => {
     { id: 'SUPPLIER', name: 'SUPPLIER' },
     { id: 'BENEFICIARY', name: 'BENEFICIARY' },
     { id: 'COLLABORATOR', name: 'COLLABORATOR' },
-    { id: 'SERVICE', name: 'SERVICE' }
+    { id: 'SERVICE', name: 'SERVICE' },
+    { id: 'HEALTH_AGREEMENT', name: 'HEALTH_AGREEMENT' }
   ]
 }
 
 export const getPatientHistoryItemTypes = () => {
   return [
     { id: 'STANDARD', name: 'STANDARD' },
-    { id: 'PSYCHOBIOLOGICAL_HABIT', name: 'PSYCHOBIOLOGICAL_HABIT' },
-    { id: 'PHYSICAL_EXAM', name: 'PHYSICAL_EXAM' }
+    { id: 'PERSONAL_HISTORY', name: 'PERSONAL_HISTORY' },
+    { id: 'PHYSICAL_EXAM', name: 'PHYSICAL_EXAM' },
+    { id: 'PATIENT_DOCUMENTS', name: 'PATIENT_DOCUMENTS' }
   ]
 }
 
@@ -232,5 +261,19 @@ export const getControlReasonsTypes = () => {
     { id: 'PROCEDURE_REVISION', name: 'PROCEDURE_REVISION' },
     { id: 'GENERAL_REVISION', name: 'GENERAL_REVISION' },
     { id: 'OTHER', name: 'OTHER' }
+  ]
+}
+
+export const getDocumentTypes = () => {
+  return [
+    { id: 'COMMERCE', name: 'COMMERCE' },
+    { id: 'CLIENT', name: 'CLIENT' }
+  ]
+}
+
+export const getDocumentCommerceTypes = () => {
+  return [
+    { id: 'terms_of_service', name: 'terms_of_service' },
+    { id: 'post_attention', name: 'post_attention' }
   ]
 }

@@ -62,10 +62,10 @@ export default {
       endDate: undefined
     }
   },
-  async beforeMount() {},
   methods: {
-    setPage(pageIn) {
+    async setPage(pageIn) {
       this.page = pageIn;
+      await this.refresh();
     },
     getDate(dateIn, timeZoneIn) {
       return getDate(dateIn, timeZoneIn);
@@ -74,6 +74,7 @@ export default {
       this.asc = true;
       this.searchText = undefined;
       this.limit = 10;
+      this.page = 1;
       this.startDate = undefined;
       this.endDate = undefined;
       await this.refresh();
@@ -89,7 +90,8 @@ export default {
       try {
         this.loading = true;
         let commerceIds = [this.commerce.id];
-        this.newProductConsumptions = await getProductsConsumptionsDetails(commerceIds, this.product.productId, this.page, this.limit, this.asc, this.startDate, this.endDate, undefined);
+        this.newProductConsumptions = await getProductsConsumptionsDetails(commerceIds, this.product.productId, this.page,
+        this.limit, this.asc, this.startDate, this.endDate, undefined);
         this.updatePaginationData();
         this.loading = false;
       } catch (error) {
@@ -511,7 +513,7 @@ export default {
   margin: .5rem;
   margin-bottom: 0;
   border-radius: .5rem;
-  border: 1.5px solid var(--gris-default);
+  border: 1px solid var(--gris-default);
 }
 .filter-card {
   background-color: var(--color-background);

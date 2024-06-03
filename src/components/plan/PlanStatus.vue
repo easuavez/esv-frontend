@@ -70,7 +70,6 @@ export default {
             <div class="col p-1">
               <button type="button" class="btn btn-sm btn-close" aria-label="Close" @click="close()"></button>
             </div>
-
           </div>
           <div class="plan-card-subtitle">
             <span v-if="isDesactivate()">{{ $t("planStatus.subtitle.desactivate") }} <span class="fw-bold"> {{ dateYYYYMMDD(planActivation.endDate) }} </span>.</span>
@@ -108,7 +107,7 @@ export default {
   padding: .5rem;
   margin: .5rem;
   border-radius: .5rem;
-  border: 1.5px solid var(--gris-default);
+  border: 1px solid var(--gris-default);
 }
 .plan-card-title {
   font-size: 1rem;

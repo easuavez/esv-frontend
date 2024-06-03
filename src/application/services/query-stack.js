@@ -269,12 +269,13 @@ export const getSurveysDetails = async (
   contacted = undefined,
   keyWord = undefined,
   searchText = undefined,
-  queueId = undefined
+  queueId = undefined,
+  serviceId = undefined
 ) => {
   const options = {};
   options.params = {
     from, to, commerceId, commerceIds, page, limit, ratingType, npsType,
-    contactable, contacted, keyWord, searchText, queueId
+    contactable, contacted, keyWord, searchText, queueId, serviceId
   };
   options.paramsSerializer = params => {
     return qs.stringify(params);
@@ -362,13 +363,14 @@ export const getAttentionsDetails = async (
   asc = true,
   contactResultType = undefined,
   serviceId = undefined,
-  stock = undefined
+  stock = undefined,
+  id = undefined
 ) => {
   const options = {};
   options.params = {
     from, to, commerceId, commerceIds, page, limit, daysSinceType, daysSinceContacted,
     contactable, contacted, searchText, queueId, survey, asc,
-    contactResultType, serviceId, stock
+    contactResultType, serviceId, stock, id
   };
   options.paramsSerializer = params => {
     return qs.stringify(params);
@@ -376,6 +378,66 @@ export const getAttentionsDetails = async (
   const { headers } = await getHeaders();
   options.headers = headers;
   return (await requestQuery.get('attention/details', options)).data;
+};
+
+export const getPendingAttentionsDetails = async (
+  commerceId,
+  from,
+  to,
+  commerceIds = undefined,
+  page = 1,
+  limit = 10,
+  daysSinceType = undefined,
+  daysSinceContacted = undefined,
+  contactable = undefined,
+  contacted = undefined,
+  searchText = undefined,
+  queueId = undefined,
+  survey = undefined,
+  asc = true,
+  contactResultType = undefined,
+  serviceId = undefined,
+  stock = undefined,
+  id = undefined
+) => {
+  const options = {};
+  options.params = {
+    from, to, commerceId, commerceIds, page, limit, daysSinceType, daysSinceContacted,
+    contactable, contacted, searchText, queueId, survey, asc,
+    contactResultType, serviceId, stock, id
+  };
+  options.paramsSerializer = params => {
+    return qs.stringify(params);
+  };
+  const { headers } = await getHeaders();
+  options.headers = headers;
+  return (await requestQuery.get('attention/details/pending', options)).data;
+};
+
+export const getBookingsDetails = async (
+  commerceId,
+  from,
+  to,
+  commerceIds = undefined,
+  page = 1,
+  limit = 10,
+  searchText = undefined,
+  queueId = undefined,
+  asc = true,
+  serviceId = undefined,
+  status = undefined
+) => {
+  const options = {};
+  options.params = {
+    from, to, commerceId, commerceIds, page, limit,
+    searchText, queueId, asc, serviceId, status
+  };
+  options.paramsSerializer = params => {
+    return qs.stringify(params);
+  };
+  const { headers } = await getHeaders();
+  options.headers = headers;
+  return (await requestQuery.get('booking/details', options)).data;
 };
 
 export const getPatientHistoryDetails = async (
@@ -411,14 +473,15 @@ export const getClientsDetails = async (
   asc = true,
   contactResultType = undefined,
   idNumber = undefined,
-  serviceId = undefined
+  serviceId = undefined,
+  pendingControls = undefined,
+  pendingBookings = undefined
 ) => {
   const options = {};
   options.params = {
-
     from, to, commerceId, commerceIds, page, limit, daysSinceType, daysSinceContacted,
     contactable, contacted, searchText, queueId, survey, asc,
-    contactResultType, businessId, idNumber, serviceId
+    contactResultType, businessId, idNumber, serviceId, pendingControls, pendingBookings
   };
   options.paramsSerializer = params => {
     return qs.stringify(params);
@@ -599,4 +662,27 @@ export const getOutcomesDetails = async (
   const { headers } = await getHeaders();
   options.headers = headers;
   return (await requestQuery.get('outcome/details', options)).data;
+};
+
+export const getDocumentsDetails = async (
+  from,
+  to,
+  commerceIds = undefined,
+  page = undefined,
+  limit = undefined,
+  searchText = undefined,
+  asc = true,
+  type = undefined
+) => {
+  const options = {};
+  options.params = {
+
+    from, to, commerceIds, page, limit, asc, searchText, type
+  };
+  options.paramsSerializer = params => {
+    return qs.stringify(params);
+  };
+  const { headers } = await getHeaders();
+  options.headers = headers;
+  return (await requestQuery.get('documents/details', options)).data;
 };
